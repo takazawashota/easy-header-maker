@@ -284,7 +284,6 @@ class EasyHeaderMaker {
             .easy-custom-header {
                 background-color: <?php echo esc_attr($header_bg_color); ?>;
                 color: <?php echo esc_attr($header_text_color); ?>;
-                padding: 26px 30px;
                 text-align: <?php echo ($header_layout === 'horizontal' ? 'left' : 'center'); ?>;
                 position: relative;
                 z-index: 999;
@@ -501,43 +500,134 @@ class EasyHeaderMaker {
             .easy-custom-header.layout-horizontal .header-subtitle {
                 margin: 0;
                 white-space: nowrap;
-                text-align: left;
-                margin-left: 5px;
                 font-size: 14px;
             }
-            @media (max-width: 768px) {
-                .easy-custom-header .header-title {
-                    font-size: 2em;
-                }
+            
+            /* デスクトップでのサブタイトル表示（帯状に背景色付き） */
+            @media (min-width: 769px) {
                 .easy-custom-header .header-subtitle {
-                    font-size: 1em;
+                    background: rgba(0, 0, 0, 0.1);
+                    color: inherit;
+                    font-size: 1.2em;
+                    padding: 8px 0;
+                    margin: 0;
+                    width: 100%;
+                    position: relative;
                 }
-                .easy-custom-header.layout-horizontal .header-inner {
-                    flex-direction: row;
-                    justify-content: space-between;
+                
+                .easy-custom-header .header-subtitle-inner {
+                    <?php echo $max_width_style; ?>
+                }
+                
+                .easy-custom-header:has(.header-subtitle) .header-inner,
+                .easy-custom-header .header-subtitle + .header-inner {
+                    margin-top: 0 !important;
+                    padding: 26px 30px;
+                    box-sizing: content-box;
+                }
+                
+                /* 横レイアウトでのサブタイトル調整 */
+                .easy-custom-header.layout-horizontal .header-subtitle {
+                    background: rgba(0, 0, 0, 0.1);
+                    font-size: 14px;
+                    padding: 6px 0;
+                }
+                
+                .easy-custom-header.layout-horizontal .header-subtitle-inner {
+                    <?php echo $max_width_style; ?>
+                    padding: 0 30px;
+                    box-sizing: content-box;
+                }
+            }
+            @media (max-width: 768px) {
+                /* モバイル専用のヘッダー構造 */
+                .easy-custom-header {
+                    padding: 0;
+                    position: relative;
+                }
+                
+                /* サブタイトルを帯状に上部表示 */
+                .easy-custom-header .header-subtitle {
+                    background: rgba(0, 0, 0, 0.1);
+                    color: inherit;
+                    font-size: 11px;
+                    padding: 4px 0;
+                    margin: 0;
+                    z-index: 1;
+                }
+                
+                .easy-custom-header .header-subtitle-inner {
+                    padding: 0 15px;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+
+                /* ヘッダー内部のレイアウト調整 */
+                .easy-custom-header .header-inner {
+                    padding: 15px 20px;
+                    display: flex;
                     align-items: center;
-                    text-align: left;
+                    justify-content: space-between;
+                    flex-wrap: nowrap;
                 }
-                .easy-custom-header.layout-horizontal .header-left {
+                
+                /* 横レイアウトの調整 */
+                .easy-custom-header.layout-horizontal .header-inner {
+
+                }
+                
+                /* 縦レイアウトの調整 */
+                .easy-custom-header:not(.layout-horizontal) .header-inner {
                     flex-direction: row;
-                    text-align: left;
-                    margin-top: 0;
+                    align-items: center;
+                    justify-content: space-between;
+                }
+                
+                /* 左側コンテンツ（ロゴ・タイトル）*/
+                .easy-custom-header .header-left,
+                .easy-custom-header .header-content {
+                    flex: 1;
+                    display: flex;
                     align-items: center;
                     gap: 10px;
+                    margin: 0;
+                    text-align: left;
                 }
-                .easy-custom-header.layout-horizontal .header-right {
-                    text-align: right;
-                    margin-top: 0;
+                
+                /* ロゴ画像のサイズ調整 */
+                .easy-custom-header .header-logo {
+                    max-width: 120px;
+                    max-height: 40px;
+                    width: auto;
+                    height: auto;
+                    margin: 0;
+                    object-fit: contain;
                 }
-                .easy-custom-header.layout-horizontal .header-subtitle {
-                    white-space: normal;
-                    margin-top: 0;
-                    margin-left: 5px;
-                    font-size: 12px;
+                
+                /* タイトルのサイズ調整 */
+                .easy-custom-header .header-title {
+                    font-size: 1.3em;
+                    margin: 0;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
                 }
-                .easy-custom-header.layout-horizontal .header-navigation {
-                    margin-left: 0;
-                    margin-top: 0;
+                
+                /* 右側のナビゲーションエリア */
+                .easy-custom-header .header-right,
+                .easy-custom-header .header-navigation {
+                    flex: 0 0 auto;
+                    margin: 0;
+                    display: flex;
+                    align-items: center;
+                    justify-content: flex-end;
+                }
+                
+                /* 縦レイアウトでのナビゲーション調整 */
+                .easy-custom-header:not(.layout-horizontal) .header-navigation {
+                    position: static;
+                    margin: 0;
                 }
                 /* ハンバーガーメニューボタンを表示 */
                 .easy-custom-header .header-navigation .hamburger-menu {
@@ -658,24 +748,25 @@ class EasyHeaderMaker {
                     opacity: 1;
                     visibility: visible;
                 }
-                /* 縦レイアウト時の調整 */
+                /* 縦レイアウトでも横並び表示にする */
                 .easy-custom-header:not(.layout-horizontal) .header-inner {
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    position: relative;
+                    display: flex !important;
+                    flex-direction: row !important;
+                    align-items: center !important;
+                    justify-content: space-between !important;
                 }
-                .easy-custom-header:not(.layout-horizontal) .hamburger-menu {
-                    position: absolute !important;
-                    top: 20px;
-                    right: 20px;
+                
+                /* ハンバーガーメニューボタンの位置調整 */
+                .easy-custom-header .hamburger-menu {
+                    position: relative !important;
+                    top: auto !important;
+                    right: auto !important;
                     display: flex !important;
                 }
-                .easy-custom-header:not(.layout-horizontal) .header-navigation {
-                    position: relative;
-                    width: 100%;
-                    display: flex;
-                    justify-content: flex-end;
+                
+                /* サブタイトルがない場合の調整 */
+                .easy-custom-header:not(:has(.header-subtitle)) .header-inner {
+                    margin-top: 0;
                 }
             }
         </style>
@@ -715,6 +806,12 @@ class EasyHeaderMaker {
         
         ?>
         <div class="easy-custom-header layout-<?php echo esc_attr($header_layout); ?>">
+            <?php if ($header_subtitle): ?>
+                <div class="header-subtitle">
+                    <div class="header-subtitle-inner"><?php echo esc_html($header_subtitle); ?></div>
+                </div>
+            <?php endif; ?>
+            
             <div class="header-inner">
                 <?php if ($header_layout === 'horizontal'): ?>
                     <div class="header-left">
@@ -728,10 +825,6 @@ class EasyHeaderMaker {
                             <h1 class="header-title">
                                 <?php echo $link_start . esc_html($header_title) . $link_end; ?>
                             </h1>
-                        <?php endif; ?>
-                        
-                        <?php if ($header_subtitle): ?>
-                            <p class="header-subtitle"><?php echo esc_html($header_subtitle); ?></p>
                         <?php endif; ?>
                     </div>
                     
@@ -756,21 +849,19 @@ class EasyHeaderMaker {
                         <?php endif; ?>
                     </div>
                 <?php else: ?>
-                    <?php if ($header_logo): ?>
-                        <div>
-                            <?php echo $link_start; ?>
-                            <img src="<?php echo esc_url($header_logo); ?>" alt="Header Logo" class="header-logo" style="<?php echo $logo_width_style; ?>" />
-                            <?php echo $link_end; ?>
-                        </div>
-                    <?php else: ?>
-                        <h1 class="header-title">
-                            <?php echo $link_start . esc_html($header_title) . $link_end; ?>
-                        </h1>
-                    <?php endif; ?>
-                    
-                    <?php if ($header_subtitle): ?>
-                        <p class="header-subtitle"><?php echo esc_html($header_subtitle); ?></p>
-                    <?php endif; ?>
+                    <div class="header-content">
+                        <?php if ($header_logo): ?>
+                            <div>
+                                <?php echo $link_start; ?>
+                                <img src="<?php echo esc_url($header_logo); ?>" alt="Header Logo" class="header-logo" style="<?php echo $logo_width_style; ?>" />
+                                <?php echo $link_end; ?>
+                            </div>
+                        <?php else: ?>
+                            <h1 class="header-title">
+                                <?php echo $link_start . esc_html($header_title) . $link_end; ?>
+                            </h1>
+                        <?php endif; ?>
+                    </div>
                     
                     <?php if (!empty($header_menu_id)): ?>
                         <nav class="header-navigation">
@@ -792,6 +883,7 @@ class EasyHeaderMaker {
                     <?php endif; ?>
                 <?php endif; ?>
             </div>
+            
             <?php if (!empty($header_menu_id)): ?>
                 <div class="menu-overlay"></div>
             <?php endif; ?>
