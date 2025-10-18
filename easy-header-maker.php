@@ -334,6 +334,7 @@ class EasyHeaderMaker {
             }
             .easy-custom-header .header-navigation {
                 margin-top: 20px;
+                position: relative;
             }
             .easy-custom-header.layout-horizontal .header-navigation {
                 margin-top: 0;
@@ -347,6 +348,55 @@ class EasyHeaderMaker {
                 justify-content: center;
                 flex-wrap: wrap;
                 gap: 20px;
+            }
+            /* デスクトップ（768px超）でのメニュー表示とハンバーガーボタン非表示 */
+            @media (min-width: 769px) {
+                .easy-custom-header .hamburger-menu {
+                    display: none !important;
+                }
+                .easy-custom-header .header-navigation ul.easy-header-menu {
+                    position: static !important;
+                    width: auto !important;
+                    height: auto !important;
+                    background: transparent !important;
+                    flex-direction: row !important;
+                    padding: 0 !important;
+                    left: auto !important;
+                    display: flex !important;
+                }
+            }
+            /* ハンバーガーメニューボタン（デフォルトで非表示） */
+            .easy-custom-header .hamburger-menu {
+                display: none;
+                flex-direction: column;
+                cursor: pointer;
+                width: 30px;
+                height: 24px;
+                justify-content: space-between;
+                background: none;
+                border: none;
+                padding: 0;
+                z-index: 1001;
+                position: relative;
+            }
+            .easy-custom-header .hamburger-menu span {
+                display: block;
+                height: 3px;
+                width: 100%;
+                background-color: #333;
+                border-radius: 2px;
+                transition: all 0.3s ease;
+                transform-origin: center;
+            }
+            /* ハンバーガーメニューのアニメーション */
+            .easy-custom-header .hamburger-menu.active span:nth-child(1) {
+                transform: rotate(45deg) translateY(10px);
+            }
+            .easy-custom-header .hamburger-menu.active span:nth-child(2) {
+                opacity: 0;
+            }
+            .easy-custom-header .hamburger-menu.active span:nth-child(3) {
+                transform: rotate(-45deg) translateY(-10px);
             }
             .easy-custom-header.layout-horizontal .header-navigation ul {
                 justify-content: flex-end;
@@ -463,56 +513,169 @@ class EasyHeaderMaker {
                     font-size: 1em;
                 }
                 .easy-custom-header.layout-horizontal .header-inner {
-                    flex-direction: column;
-                    text-align: center;
+                    flex-direction: row;
+                    justify-content: space-between;
+                    align-items: center;
+                    text-align: left;
                 }
                 .easy-custom-header.layout-horizontal .header-left {
-                    flex-direction: column;
-                    text-align: center;
+                    flex-direction: row;
+                    text-align: left;
                     margin-top: 0;
-                }
-                .easy-custom-header.layout-horizontal .header-right {
-                    text-align: center;
-                    margin-top: 15px;
-                }
-                .easy-custom-header.layout-horizontal .header-subtitle {
-                    white-space: normal;
-                    margin-top: 5px;
-                }
-                .easy-custom-header.layout-horizontal .header-navigation {
-                    margin-left: 0;
-                    margin-top: 15px;
-                }
-                .easy-custom-header .header-navigation ul {
-                    flex-direction: column;
                     align-items: center;
                     gap: 10px;
                 }
+                .easy-custom-header.layout-horizontal .header-right {
+                    text-align: right;
+                    margin-top: 0;
+                }
+                .easy-custom-header.layout-horizontal .header-subtitle {
+                    white-space: normal;
+                    margin-top: 0;
+                    margin-left: 5px;
+                    font-size: 12px;
+                }
+                .easy-custom-header.layout-horizontal .header-navigation {
+                    margin-left: 0;
+                    margin-top: 0;
+                }
+                /* ハンバーガーメニューボタンを表示 */
+                .easy-custom-header .header-navigation .hamburger-menu {
+                    display: flex !important;
+                    position: relative;
+                    z-index: 1002;
+                }
+                /* 横レイアウトでのハンバーガーメニュー位置調整 */
+                .easy-custom-header.layout-horizontal .header-navigation .hamburger-menu {
+                    margin-left: auto;
+                }
+                /* モバイルでデスクトップメニューを非表示にして、ハンバーガーメニューのみ表示 */
+                .easy-custom-header .header-navigation ul.easy-header-menu:not(.active) {
+                    display: none;
+                }
+                .easy-custom-header .header-navigation .hamburger-menu {
+                    display: flex;
+                }
+                /* デスクトップでメニューを通常表示、モバイルでハンバーガー化 */
+                .easy-custom-header .header-navigation ul.easy-header-menu {
+                    position: fixed;
+                    top: 0;
+                    left: -100%;
+                    width: 280px;
+                    height: 100vh;
+                    background: rgba(0, 0, 0, 0.95);
+                    flex-direction: column;
+                    justify-content: flex-start;
+                    align-items: stretch;
+                    gap: 0;
+                    padding: 60px 0 20px 0;
+                    margin: 0;
+                    z-index: 1000;
+                    transition: left 0.3s ease;
+                    overflow-y: auto;
+                }
+                .easy-custom-header .header-navigation ul.easy-header-menu.active {
+                    left: 0;
+                }
+                .easy-custom-header .header-navigation ul.easy-header-menu li {
+                    width: 100%;
+                    margin: 0;
+                }
+                .easy-custom-header .header-navigation ul.easy-header-menu li a {
+                    display: block;
+                    padding: 15px 20px;
+                    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                    color: #fff;
+                    font-size: 16px;
+                    border-radius: 0;
+                }
+                .easy-custom-header .header-navigation ul.easy-header-menu li a:hover {
+                    background-color: rgba(255, 255, 255, 0.1);
+                }
+                /* サブメニューの処理 */
                 .easy-custom-header .header-navigation .sub-menu {
-                    position: static;
+                    position: static !important;
+                    left: auto !important;
+                    top: auto !important;
                     min-width: auto;
                     width: 100%;
-                    background: rgba(255, 255, 255, 0.1);
+                    background: rgba(255, 255, 255, 0.05);
                     box-shadow: none;
-                    margin-top: 10px;
-                    transform: none;
+                    margin-top: 0;
+                    transform: none !important;
+                    opacity: 1;
+                    visibility: visible;
+                    display: none; /* 初期状態で非表示 */
+                    flex-direction: column;
+                }
+                .easy-custom-header .header-navigation .sub-menu.active {
+                    display: flex;
+                }
+                .easy-custom-header .header-navigation .sub-menu a {
+                    padding: 12px 40px !important;
+                    font-size: 14px;
+                }
+                /* 孫メニュー以降も同様に */
+                .easy-custom-header .header-navigation .sub-menu .sub-menu {
+                    background: rgba(255, 255, 255, 0.03);
+                }
+                .easy-custom-header .header-navigation .sub-menu .sub-menu a {
+                    padding: 10px 60px !important;
+                }
+                /* 親メニューにインジケーター追加 */
+                .easy-custom-header .header-navigation .menu-item-has-children > a:after {
+                    content: "▼";
+                    position: absolute;
+                    right: 20px;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    font-size: 12px;
+                    transition: transform 0.3s ease;
+                }
+                .easy-custom-header .header-navigation .menu-item-has-children.sub-menu-open > a:after {
+                    transform: translateY(-50%) rotate(180deg);
+                }
+                .easy-custom-header .header-navigation .sub-menu .menu-item-has-children > a:after {
+                    right: 40px;
+                }
+                .easy-custom-header .header-navigation .sub-menu .sub-menu .menu-item-has-children > a:after {
+                    right: 60px;
+                }
+                /* オーバーレイ */
+                .easy-custom-header .menu-overlay {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0, 0, 0, 0.5);
+                    z-index: 999;
+                    opacity: 0;
+                    visibility: hidden;
+                    transition: all 0.3s ease;
+                }
+                .easy-custom-header .menu-overlay.active {
                     opacity: 1;
                     visibility: visible;
                 }
-                .easy-custom-header .header-navigation .sub-menu a {
-                    padding: 8px 16px;
+                /* 縦レイアウト時の調整 */
+                .easy-custom-header:not(.layout-horizontal) .header-inner {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    position: relative;
                 }
-                /* モバイルでの孫メニュー以降も縦に表示 */
-                .easy-custom-header .header-navigation .sub-menu .sub-menu {
-                    position: static;
-                    left: auto;
-                    top: auto;
-                    margin-left: 20px;
-                    background: rgba(255, 255, 255, 0.05);
+                .easy-custom-header:not(.layout-horizontal) .hamburger-menu {
+                    position: absolute !important;
+                    top: 20px;
+                    right: 20px;
+                    display: flex !important;
                 }
-                .easy-custom-header .header-navigation .sub-menu .menu-item-has-children > a:after {
-                    content: "▼";
-                    transform: translateY(-50%) rotate(0);
+                .easy-custom-header:not(.layout-horizontal) .header-navigation {
+                    position: relative;
+                    width: 100%;
+                    display: flex;
+                    justify-content: flex-end;
                 }
             }
         </style>
@@ -575,6 +738,11 @@ class EasyHeaderMaker {
                     <div class="header-right">
                         <?php if (!empty($header_menu_id)): ?>
                             <nav class="header-navigation">
+                                <button class="hamburger-menu" aria-label="メニューを開く">
+                                    <span></span>
+                                    <span></span>
+                                    <span></span>
+                                </button>
                                 <?php
                                 wp_nav_menu(array(
                                     'menu' => $header_menu_id,
@@ -606,6 +774,11 @@ class EasyHeaderMaker {
                     
                     <?php if (!empty($header_menu_id)): ?>
                         <nav class="header-navigation">
+                            <button class="hamburger-menu" aria-label="メニューを開く">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </button>
                             <?php
                             wp_nav_menu(array(
                                 'menu' => $header_menu_id,
@@ -619,6 +792,9 @@ class EasyHeaderMaker {
                     <?php endif; ?>
                 <?php endif; ?>
             </div>
+            <?php if (!empty($header_menu_id)): ?>
+                <div class="menu-overlay"></div>
+            <?php endif; ?>
         </div>
         <?php
     }
@@ -637,43 +813,127 @@ class EasyHeaderMaker {
             var header = document.querySelector(".easy-custom-header");
             if (header) {
                 initDropdownMenu(header);
+                initHamburgerMenu(header);
             }
         });
         
-        // ドロップダウンメニューの初期化
+        // ハンバーガーメニューの初期化
+        function initHamburgerMenu(header) {
+            var hamburgerBtn = header.querySelector(".hamburger-menu");
+            var navigation = header.querySelector(".header-navigation");
+            var menu = header.querySelector(".easy-header-menu");
+            var overlay = header.querySelector(".menu-overlay");
+            
+            if (!hamburgerBtn || !menu) return;
+            
+            // ハンバーガーボタンクリック
+            hamburgerBtn.addEventListener("click", function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                toggleMobileMenu();
+            });
+            
+            // オーバーレイクリック
+            if (overlay) {
+                overlay.addEventListener("click", function() {
+                    closeMobileMenu();
+                });
+            }
+            
+            // ESCキーでメニューを閉じる
+            document.addEventListener("keydown", function(e) {
+                if (e.key === "Escape") {
+                    closeMobileMenu();
+                }
+            });
+            
+            // ウィンドウリサイズ時の処理
+            window.addEventListener("resize", function() {
+                if (window.innerWidth > 768) {
+                    closeMobileMenu();
+                }
+            });
+            
+            // モバイルメニューのサブメニュークリック処理
+            var mobileMenuItems = menu.querySelectorAll(".menu-item-has-children > a");
+            mobileMenuItems.forEach(function(link) {
+                link.addEventListener("click", function(e) {
+                    if (window.innerWidth <= 768) {
+                        e.preventDefault();
+                        var parentItem = link.closest("li");
+                        var subMenu = parentItem.querySelector(".sub-menu");
+                        
+                        if (subMenu) {
+                            var isOpen = parentItem.classList.contains("sub-menu-open");
+                            
+                            // 同レベルの他のサブメニューを閉じる
+                            var siblings = parentItem.parentNode.children;
+                            for (var i = 0; i < siblings.length; i++) {
+                                if (siblings[i] !== parentItem) {
+                                    siblings[i].classList.remove("sub-menu-open");
+                                    var siblingSubMenu = siblings[i].querySelector(".sub-menu");
+                                    if (siblingSubMenu) {
+                                        siblingSubMenu.classList.remove("active");
+                                    }
+                                }
+                            }
+                            
+                            // 現在のサブメニューを切り替え
+                            if (isOpen) {
+                                parentItem.classList.remove("sub-menu-open");
+                                subMenu.classList.remove("active");
+                            } else {
+                                parentItem.classList.add("sub-menu-open");
+                                subMenu.classList.add("active");
+                            }
+                        }
+                    }
+                });
+            });
+            
+            function toggleMobileMenu() {
+                var isOpen = menu.classList.contains("active");
+                
+                if (isOpen) {
+                    closeMobileMenu();
+                } else {
+                    openMobileMenu();
+                }
+            }
+            
+            function openMobileMenu() {
+                menu.classList.add("active");
+                hamburgerBtn.classList.add("active");
+                if (overlay) overlay.classList.add("active");
+                document.body.style.overflow = "hidden";
+                hamburgerBtn.setAttribute("aria-label", "メニューを閉じる");
+            }
+            
+            function closeMobileMenu() {
+                menu.classList.remove("active");
+                hamburgerBtn.classList.remove("active");
+                if (overlay) overlay.classList.remove("active");
+                document.body.style.overflow = "";
+                hamburgerBtn.setAttribute("aria-label", "メニューを開く");
+                
+                // すべてのサブメニューを閉じる
+                menu.querySelectorAll(".menu-item-has-children").forEach(function(item) {
+                    item.classList.remove("sub-menu-open");
+                });
+                menu.querySelectorAll(".sub-menu").forEach(function(subMenu) {
+                    subMenu.classList.remove("active");
+                });
+            }
+        }
+        
+        // ドロップダウンメニューの初期化（デスクトップ用）
         function initDropdownMenu(header) {
             var menuItems = header.querySelectorAll(".header-navigation li");
             
             menuItems.forEach(function(item) {
                 var subMenu = item.querySelector(".sub-menu");
                 if (subMenu) {
-                    // タッチデバイス対応：クリックでサブメニューの表示/非表示を切り替え
-                    var parentLink = item.querySelector("a");
-                    if (parentLink) {
-                        parentLink.addEventListener("click", function(e) {
-                            // モバイルデバイスの場合
-                            if (window.innerWidth <= 768) {
-                                e.preventDefault();
-                                var isVisible = subMenu.style.display === "block";
-                                
-                                // 同じレベルのサブメニューを閉じる
-                                var siblings = item.parentNode.children;
-                                for (var i = 0; i < siblings.length; i++) {
-                                    if (siblings[i] !== item) {
-                                        var siblingSubMenu = siblings[i].querySelector(".sub-menu");
-                                        if (siblingSubMenu) {
-                                            siblingSubMenu.style.display = "none";
-                                        }
-                                    }
-                                }
-                                
-                                // 現在のサブメニューの表示を切り替え
-                                subMenu.style.display = isVisible ? "none" : "block";
-                            }
-                        });
-                    }
-                    
-                    // マウスホバーイベント（デスクトップ）
+                    // マウスホバーイベント（デスクトップのみ）
                     item.addEventListener("mouseenter", function() {
                         if (window.innerWidth > 768) {
                             // 孫メニュー以降の位置調整
@@ -731,11 +991,17 @@ class EasyHeaderMaker {
                 }
             }
             
-            // 外側クリックでサブメニューを閉じる
+            // 外側クリックでサブメニューを閉じる（デスクトップのみ）
             document.addEventListener("click", function(e) {
-                if (!header.contains(e.target)) {
+                if (window.innerWidth > 768 && !header.contains(e.target)) {
                     header.querySelectorAll(".sub-menu").forEach(function(menu) {
-                        menu.style.display = "none";
+                        menu.style.opacity = "0";
+                        menu.style.visibility = "hidden";
+                        if (menu.closest(".sub-menu") === null) {
+                            menu.style.transform = "translateY(-10px)";
+                        } else {
+                            menu.style.transform = "translateX(-10px)";
+                        }
                     });
                 }
             });
