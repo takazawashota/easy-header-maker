@@ -505,6 +505,11 @@ class EasyHeaderMaker {
             
             /* デスクトップでのサブタイトル表示（帯状に背景色付き） */
             @media (min-width: 769px) {
+                /* デスクトップでのheader-innerに基本パディング適用 */
+                .easy-custom-header .header-inner {
+                    padding: 26px 0;
+                }
+                
                 .easy-custom-header .header-subtitle {
                     background: rgba(0, 0, 0, 0.1);
                     color: inherit;
