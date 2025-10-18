@@ -191,6 +191,18 @@ class EasyHeaderMaker {
                 'single' => true,
                 'default' => '#ffffff'
             ));
+            
+            register_post_meta($post_type, '_easy_header_sticky_desktop', array(
+                'type' => 'boolean',
+                'single' => true,
+                'default' => false
+            ));
+            
+            register_post_meta($post_type, '_easy_header_sticky_mobile', array(
+                'type' => 'boolean',
+                'single' => true,
+                'default' => false
+            ));
         }
     }
     
@@ -243,7 +255,9 @@ class EasyHeaderMaker {
                     'header_layout' => get_option('easy_header_front_layout', 'center'),
                     'header_link_url' => get_option('easy_header_front_link_url', ''),
                     'header_menu_id' => get_option('easy_header_front_menu_id', ''),
-                    'header_width' => get_option('easy_header_front_width', 'full')
+                    'header_width' => get_option('easy_header_front_width', 'full'),
+                    'header_sticky_desktop' => get_option('easy_header_front_sticky_desktop', 0),
+                    'header_sticky_mobile' => get_option('easy_header_front_sticky_mobile', 0)
                 );
             }
             // 管理画面設定が無効の場合、静的フロントページの設定をチェック
@@ -279,7 +293,9 @@ class EasyHeaderMaker {
             'header_layout' => get_post_meta($post_id, '_easy_header_layout', true) ?: 'center',
             'header_link_url' => get_post_meta($post_id, '_easy_header_link_url', true),
             'header_menu_id' => get_post_meta($post_id, '_easy_header_menu_id', true),
-            'header_width' => get_post_meta($post_id, '_easy_header_width', true) ?: 'full'
+            'header_width' => get_post_meta($post_id, '_easy_header_width', true) ?: 'full',
+            'header_sticky_desktop' => get_post_meta($post_id, '_easy_header_sticky_desktop', true),
+            'header_sticky_mobile' => get_post_meta($post_id, '_easy_header_sticky_mobile', true)
         );
     }
     
@@ -311,6 +327,30 @@ class EasyHeaderMaker {
                 text-align: <?php echo ($header_layout === 'horizontal' ? 'left' : 'center'); ?>;
                 position: relative;
                 z-index: 999;
+                <?php if ($header_sticky_desktop && $header_sticky_mobile): ?>
+                position: sticky;
+                top: 0;
+                <?php endif; ?>
+            }
+            
+            /* デスクトップでのスティッキー設定 */
+            @media (min-width: 769px) {
+                <?php if ($header_sticky_desktop && !$header_sticky_mobile): ?>
+                .easy-custom-header {
+                    position: sticky;
+                    top: 0;
+                }
+                <?php endif; ?>
+            }
+            
+            /* モバイルでのスティッキー設定 */
+            @media (max-width: 768px) {
+                <?php if ($header_sticky_mobile && !$header_sticky_desktop): ?>
+                .easy-custom-header {
+                    position: sticky;
+                    top: 0;
+                }
+                <?php endif; ?>
             }
             .easy-custom-header .header-inner {
                 <?php echo $max_width_style; ?>
@@ -583,7 +623,7 @@ class EasyHeaderMaker {
                     box-sizing: content-box;
                 }
                 
-                .easy-custom-header.layout-center .header-inner {
+                .easy-custom-header.layout-center:has(.header-navigation) .header-inner {
                     padding-top: 36px;
                 }
 
@@ -1041,6 +1081,8 @@ class EasyHeaderMaker {
         $header_link_url = get_post_meta($post->ID, '_easy_header_link_url', true);
         $header_menu_id = get_post_meta($post->ID, '_easy_header_menu_id', true);
         $header_width = get_post_meta($post->ID, '_easy_header_width', true) ?: 'full';
+        $header_sticky_desktop = get_post_meta($post->ID, '_easy_header_sticky_desktop', true);
+        $header_sticky_mobile = get_post_meta($post->ID, '_easy_header_sticky_mobile', true);
         ?>
         <div style="max-width: 800px;">
             <table class="form-table">
@@ -1249,6 +1291,20 @@ class EasyHeaderMaker {
                             メニューは「外観」→「メニュー」で作成できます。ドロップダウンメニューにも対応しています。</p>
                         </td>
                     </tr>
+                    <tr>
+                        <th scope="row">スクロール時の固定表示</th>
+                        <td>
+                            <label style="display: block; margin-bottom: 5px;">
+                                <input type="checkbox" name="easy_header_sticky_desktop" value="1" <?php checked($header_sticky_desktop, 1); ?> />
+                                PCでスクロール時にヘッダーを上部に固定する
+                            </label>
+                            <label>
+                                <input type="checkbox" name="easy_header_sticky_mobile" value="1" <?php checked($header_sticky_mobile, 1); ?> />
+                                スマホでスクロール時にヘッダーを上部に固定する
+                            </label>
+                            <p class="description">チェックすると、スクロール時にヘッダーが画面上部に固定表示されます。</p>
+                        </td>
+                    </tr>
                 </table>
             </div>
         </div>
@@ -1430,6 +1486,10 @@ class EasyHeaderMaker {
         } elseif (isset($_POST['easy_header_subtitle_text_color'])) {
             update_post_meta($post_id, '_easy_header_subtitle_text_color', sanitize_hex_color($_POST['easy_header_subtitle_text_color']));
         }
+        
+        // スティッキー設定の処理
+        update_post_meta($post_id, '_easy_header_sticky_desktop', isset($_POST['easy_header_sticky_desktop']) ? 1 : 0);
+        update_post_meta($post_id, '_easy_header_sticky_mobile', isset($_POST['easy_header_sticky_mobile']) ? 1 : 0);
     }
     
     /**
@@ -1507,6 +1567,10 @@ class EasyHeaderMaker {
                 update_option('easy_header_front_width', sanitize_text_field($_POST['easy_header_front_width']));
             }
             
+            // スティッキー設定の処理
+            update_option('easy_header_front_sticky_desktop', isset($_POST['easy_header_front_sticky_desktop']) ? 1 : 0);
+            update_option('easy_header_front_sticky_mobile', isset($_POST['easy_header_front_sticky_mobile']) ? 1 : 0);
+            
             echo '<div class="notice notice-success is-dismissible"><p>設定が保存されました。</p></div>';
         }
         
@@ -1525,6 +1589,8 @@ class EasyHeaderMaker {
         $front_link_url = get_option('easy_header_front_link_url', '');
         $front_menu_id = get_option('easy_header_front_menu_id', '');
         $front_width = get_option('easy_header_front_width', 'full');
+        $front_sticky_desktop = get_option('easy_header_front_sticky_desktop', 0);
+        $front_sticky_mobile = get_option('easy_header_front_sticky_mobile', 0);
         ?>
         <div class="wrap">
             <h1>Easy Header Maker 設定</h1>
