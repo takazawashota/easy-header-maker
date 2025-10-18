@@ -173,6 +173,24 @@ class EasyHeaderMaker {
                 'single' => true,
                 'default' => 'full'
             ));
+            
+            register_post_meta($post_type, '_easy_header_logo_width_mobile', array(
+                'type' => 'string',
+                'single' => true,
+                'default' => '120'
+            ));
+            
+            register_post_meta($post_type, '_easy_header_subtitle_bg_color', array(
+                'type' => 'string',
+                'single' => true,
+                'default' => '#1a1a1a'
+            ));
+            
+            register_post_meta($post_type, '_easy_header_subtitle_text_color', array(
+                'type' => 'string',
+                'single' => true,
+                'default' => '#ffffff'
+            ));
         }
     }
     
@@ -219,6 +237,9 @@ class EasyHeaderMaker {
                     'header_bg_color' => get_option('easy_header_front_bg_color', '#ffffff'),
                     'header_text_color' => get_option('easy_header_front_text_color', '#000000'),
                     'header_logo_width' => get_option('easy_header_front_logo_width', '200'),
+                    'header_logo_width_mobile' => get_option('easy_header_front_logo_width_mobile', '120'),
+                    'header_subtitle_bg_color' => get_option('easy_header_front_subtitle_bg_color', '#ddd'),
+                    'header_subtitle_text_color' => get_option('easy_header_front_subtitle_text_color', '#ffffff'),
                     'header_layout' => get_option('easy_header_front_layout', 'center'),
                     'header_link_url' => get_option('easy_header_front_link_url', ''),
                     'header_menu_id' => get_option('easy_header_front_menu_id', ''),
@@ -252,6 +273,9 @@ class EasyHeaderMaker {
             'header_bg_color' => get_post_meta($post_id, '_easy_header_bg_color', true) ?: '#ffffff',
             'header_text_color' => get_post_meta($post_id, '_easy_header_text_color', true) ?: '#000000',
             'header_logo_width' => get_post_meta($post_id, '_easy_header_logo_width', true) ?: '200',
+            'header_logo_width_mobile' => get_post_meta($post_id, '_easy_header_logo_width_mobile', true) ?: '120',
+            'header_subtitle_bg_color' => get_post_meta($post_id, '_easy_header_subtitle_bg_color', true) ?: '#ddd',
+            'header_subtitle_text_color' => get_post_meta($post_id, '_easy_header_subtitle_text_color', true) ?: '#ffffff',
             'header_layout' => get_post_meta($post_id, '_easy_header_layout', true) ?: 'center',
             'header_link_url' => get_post_meta($post_id, '_easy_header_link_url', true),
             'header_menu_id' => get_post_meta($post_id, '_easy_header_menu_id', true),
@@ -305,15 +329,22 @@ class EasyHeaderMaker {
             }
             .easy-custom-header.layout-horizontal .header-right {
                 flex: 1;
-                text-align: right;
             }
             .easy-custom-header .header-logo {
                 height: auto;
                 margin-bottom: 20px;
+                <?php if ($header_logo_width === 'auto'): ?>
+                width: auto;
+                <?php else: ?>
+                width: <?php echo esc_attr($header_logo_width); ?>px;
+                <?php endif; ?>
             }
             .easy-custom-header.layout-horizontal .header-logo {
                 margin-bottom: 0;
                 margin-right: 0;
+            }
+            .easy-custom-header.layout-center .header-logo {
+                margin-bottom: 0;
             }
             .easy-custom-header .header-title {
                 font-size: 2.5em;
@@ -325,8 +356,12 @@ class EasyHeaderMaker {
                 margin-right: 0;
             }
             .easy-custom-header a {
+                display: flex;
                 color: inherit;
                 text-decoration: none;
+            }
+            .easy-custom-header.layout-center a {
+                justify-content: center;
             }
             .easy-custom-header a:hover {
                 opacity: 0.8;
@@ -338,6 +373,9 @@ class EasyHeaderMaker {
             .easy-custom-header.layout-horizontal .header-navigation {
                 margin-top: 0;
                 margin-left: auto;
+            }
+            .easy-custom-header.layout-center .header-navigation {
+                margin-top: 20px;
             }
             .easy-custom-header .header-navigation ul {
                 list-style: none;
@@ -370,32 +408,55 @@ class EasyHeaderMaker {
                 flex-direction: column;
                 cursor: pointer;
                 width: 30px;
-                height: 24px;
+                height: 20px;
                 justify-content: space-between;
-                background: none;
-                border: none;
+                background: none !important;
+                border: none !important;
                 padding: 0;
                 z-index: 1001;
                 position: relative;
+                outline: none !important;
+                box-shadow: none !important;
+            }
+            .easy-custom-header .hamburger-menu:focus,
+            .easy-custom-header .hamburger-menu:active,
+            .easy-custom-header .hamburger-menu:hover {
+                background: none !important;
+                outline: none !important;
+                box-shadow: none !important;
             }
             .easy-custom-header .hamburger-menu span {
                 display: block;
                 height: 3px;
                 width: 100%;
-                background-color: #333;
+                background-color: currentColor;
                 border-radius: 2px;
-                transition: all 0.3s ease;
-                transform-origin: center;
+                transition: all 0.3s ease-in-out;
+                transform-origin: center center;
+                position: absolute;
+            }
+            .easy-custom-header .hamburger-menu span:nth-child(1) {
+                top: 0;
+            }
+            .easy-custom-header .hamburger-menu span:nth-child(2) {
+                top: 50%;
+                transform: translateY(-50%);
+            }
+            .easy-custom-header .hamburger-menu span:nth-child(3) {
+                bottom: 0;
             }
             /* ハンバーガーメニューのアニメーション */
             .easy-custom-header .hamburger-menu.active span:nth-child(1) {
-                transform: rotate(45deg) translateY(10px);
+                top: 50%;
+                transform: translateY(-50%) rotate(45deg);
             }
             .easy-custom-header .hamburger-menu.active span:nth-child(2) {
                 opacity: 0;
+                transform: translateY(-50%) scaleX(0);
             }
             .easy-custom-header .hamburger-menu.active span:nth-child(3) {
-                transform: rotate(-45deg) translateY(-10px);
+                bottom: 50%;
+                transform: translateY(50%) rotate(-45deg);
             }
             .easy-custom-header.layout-horizontal .header-navigation ul {
                 justify-content: flex-end;
@@ -406,9 +467,10 @@ class EasyHeaderMaker {
             }
             .easy-custom-header .header-navigation a {
                 display: block;
-                padding: 8px 12px;
+                padding: 8px 4px;
                 border-radius: 4px;
                 transition: background-color 0.3s ease;
+                text-align: left;
             }
             .easy-custom-header .header-navigation a:hover {
                 background-color: rgba(255, 255, 255, 0.1);
@@ -447,15 +509,6 @@ class EasyHeaderMaker {
                 position: relative;
             }
             /* 孫メニューがある項目にインジケーター追加 */
-            .easy-custom-header .header-navigation .sub-menu .menu-item-has-children > a:after {
-                content: "▶";
-                position: absolute;
-                right: 12px;
-                top: 50%;
-                transform: translateY(-50%);
-                font-size: 10px;
-                opacity: 0.7;
-            }
             .easy-custom-header .header-navigation .sub-menu li:last-child a {
                 border-bottom: none;
                 border-radius: 0 0 4px 4px;
@@ -493,7 +546,6 @@ class EasyHeaderMaker {
                 z-index: 10001;
             }
             .easy-custom-header .header-subtitle {
-                font-size: 1.2em;
                 margin: 0;
                 opacity: 0.8;
             }
@@ -511,9 +563,9 @@ class EasyHeaderMaker {
                 }
                 
                 .easy-custom-header .header-subtitle {
-                    background: rgba(0, 0, 0, 0.1);
-                    color: inherit;
-                    font-size: 1.2em;
+                    background: <?php echo esc_attr($header_subtitle_bg_color); ?>;
+                    color: <?php echo esc_attr($header_subtitle_text_color); ?>;
+                    font-size: 14px;
                     padding: 8px 0;
                     margin: 0;
                     width: 100%;
@@ -531,9 +583,14 @@ class EasyHeaderMaker {
                     box-sizing: content-box;
                 }
                 
+                .easy-custom-header.layout-center .header-inner {
+                    padding-top: 36px;
+                }
+
                 /* 横レイアウトでのサブタイトル調整 */
                 .easy-custom-header.layout-horizontal .header-subtitle {
-                    background: rgba(0, 0, 0, 0.1);
+                    background: <?php echo esc_attr($header_subtitle_bg_color); ?>;
+                    color: <?php echo esc_attr($header_subtitle_text_color); ?>;
                     font-size: 14px;
                     padding: 6px 0;
                 }
@@ -553,8 +610,8 @@ class EasyHeaderMaker {
                 
                 /* サブタイトルを帯状に上部表示 */
                 .easy-custom-header .header-subtitle {
-                    background: rgba(0, 0, 0, 0.1);
-                    color: inherit;
+                    background: <?php echo esc_attr($header_subtitle_bg_color); ?>;
+                    color: <?php echo esc_attr($header_subtitle_text_color); ?>;
                     font-size: 11px;
                     padding: 4px 0;
                     margin: 0;
@@ -602,9 +659,13 @@ class EasyHeaderMaker {
                 
                 /* ロゴ画像のサイズ調整 */
                 .easy-custom-header .header-logo {
-                    max-width: 120px;
+                    max-width: none;
                     max-height: 40px;
+                    <?php if ($header_logo_width_mobile === 'auto'): ?>
                     width: auto;
+                    <?php else: ?>
+                    width: <?php echo esc_attr($header_logo_width_mobile); ?>px;
+                    <?php endif; ?>
                     height: auto;
                     margin: 0;
                     object-fit: contain;
@@ -644,10 +705,7 @@ class EasyHeaderMaker {
                 .easy-custom-header.layout-horizontal .header-navigation .hamburger-menu {
                     margin-left: auto;
                 }
-                /* モバイルでデスクトップメニューを非表示にして、ハンバーガーメニューのみ表示 */
-                .easy-custom-header .header-navigation ul.easy-header-menu:not(.active) {
-                    display: none;
-                }
+                /* ハンバーガーメニューボタンを表示 */
                 .easy-custom-header .header-navigation .hamburger-menu {
                     display: flex;
                 }
@@ -655,7 +713,7 @@ class EasyHeaderMaker {
                 .easy-custom-header .header-navigation ul.easy-header-menu {
                     position: fixed;
                     top: 0;
-                    left: -100%;
+                    left: 0;
                     width: 280px;
                     height: 100vh;
                     background: rgba(0, 0, 0, 0.95);
@@ -666,11 +724,13 @@ class EasyHeaderMaker {
                     padding: 60px 0 20px 0;
                     margin: 0;
                     z-index: 1000;
-                    transition: left 0.3s ease;
+                    transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+                    transform: translateX(-100%);
                     overflow-y: auto;
+                    display: flex;
                 }
                 .easy-custom-header .header-navigation ul.easy-header-menu.active {
-                    left: 0;
+                    transform: translateX(0);
                 }
                 .easy-custom-header .header-navigation ul.easy-header-menu li {
                     width: 100%;
@@ -683,9 +743,11 @@ class EasyHeaderMaker {
                     color: #fff;
                     font-size: 16px;
                     border-radius: 0;
+                    transition: background-color 0.3s ease, transform 0.2s ease;
                 }
                 .easy-custom-header .header-navigation ul.easy-header-menu li a:hover {
                     background-color: rgba(255, 255, 255, 0.1);
+                    transform: translateX(5px);
                 }
                 /* サブメニューの処理 */
                 .easy-custom-header .header-navigation .sub-menu {
@@ -693,22 +755,28 @@ class EasyHeaderMaker {
                     left: auto !important;
                     top: auto !important;
                     min-width: auto;
-                    width: 100%;
-                    background: rgba(255, 255, 255, 0.05);
-                    box-shadow: none;
-                    margin-top: 0;
+                    width: 100% !important;
+                    background: rgba(255, 255, 255, 0.05) !important;
+                    box-shadow: none !important;
+                    margin-top: 0 !important;
                     transform: none !important;
-                    opacity: 1;
-                    visibility: visible;
-                    display: none; /* 初期状態で非表示 */
-                    flex-direction: column;
+                    display: flex !important;
+                    flex-direction: column !important;
+                    opacity: 1 !important;
+                    visibility: visible !important;
                 }
-                .easy-custom-header .header-navigation .sub-menu.active {
-                    display: flex;
+                .easy-custom-header .header-navigation .sub-menu li {
+                    width: 100% !important;
+                    margin: 0 !important;
+                    display: block !important;
                 }
                 .easy-custom-header .header-navigation .sub-menu a {
+                    display: block !important;
                     padding: 12px 40px !important;
-                    font-size: 14px;
+                    font-size: 14px !important;
+                    color: #fff !important;
+                    text-decoration: none !important;
+                    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
                 }
                 /* 孫メニュー以降も同様に */
                 .easy-custom-header .header-navigation .sub-menu .sub-menu {
@@ -717,25 +785,8 @@ class EasyHeaderMaker {
                 .easy-custom-header .header-navigation .sub-menu .sub-menu a {
                     padding: 10px 60px !important;
                 }
-                /* 親メニューにインジケーター追加 */
-                .easy-custom-header .header-navigation .menu-item-has-children > a:after {
-                    content: "▼";
-                    position: absolute;
-                    right: 20px;
-                    top: 50%;
-                    transform: translateY(-50%);
-                    font-size: 12px;
-                    transition: transform 0.3s ease;
-                }
-                .easy-custom-header .header-navigation .menu-item-has-children.sub-menu-open > a:after {
-                    transform: translateY(-50%) rotate(180deg);
-                }
-                .easy-custom-header .header-navigation .sub-menu .menu-item-has-children > a:after {
-                    right: 40px;
-                }
-                .easy-custom-header .header-navigation .sub-menu .sub-menu .menu-item-has-children > a:after {
-                    right: 60px;
-                }
+
+
                 /* オーバーレイ */
                 .easy-custom-header .menu-overlay {
                     position: fixed;
@@ -747,7 +798,8 @@ class EasyHeaderMaker {
                     z-index: 999;
                     opacity: 0;
                     visibility: hidden;
-                    transition: all 0.3s ease;
+                    transition: opacity 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), 
+                                visibility 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
                 }
                 .easy-custom-header .menu-overlay.active {
                     opacity: 1;
@@ -774,6 +826,11 @@ class EasyHeaderMaker {
                     margin-top: 0;
                 }
             }
+            
+            /* ボタン要素のスタイル */
+            button.hamburger-menu{
+                color: #000 !important;
+            }
         </style>
         <?php
     }
@@ -797,17 +854,8 @@ class EasyHeaderMaker {
             $link_end = '</a>';
         }
         
-        // ロゴ幅の設定
+        // ロゴ幅はCSSで制御するため、インラインスタイルは使用しない
         $logo_width_style = '';
-        if (!empty($header_logo_width)) {
-            if ($header_logo_width === 'auto') {
-                $logo_width_style = 'width: auto;';
-            } else {
-                $logo_width_style = 'width: ' . intval($header_logo_width) . 'px;';
-            }
-        } else {
-            $logo_width_style = 'width: 200px;';
-        }
         
         ?>
         <div class="easy-custom-header layout-<?php echo esc_attr($header_layout); ?>">
@@ -907,202 +955,30 @@ class EasyHeaderMaker {
         ?>
         <script id="easy-header-scripts">
         document.addEventListener("DOMContentLoaded", function() {
-            var header = document.querySelector(".easy-custom-header");
-            if (header) {
-                initDropdownMenu(header);
-                initHamburgerMenu(header);
+            var hamburgerBtn = document.querySelector(".hamburger-menu");
+            var menu = document.querySelector(".easy-header-menu");
+            var overlay = document.querySelector(".menu-overlay");
+            
+            if (hamburgerBtn && menu) {
+                // ハンバーガーボタンクリック
+                hamburgerBtn.addEventListener("click", function() {
+                    menu.classList.toggle("active");
+                    hamburgerBtn.classList.toggle("active");
+                    if (overlay) {
+                        overlay.classList.toggle("active");
+                    }
+                });
+                
+                // オーバーレイクリックでメニューを閉じる
+                if (overlay) {
+                    overlay.addEventListener("click", function() {
+                        menu.classList.remove("active");
+                        hamburgerBtn.classList.remove("active");
+                        overlay.classList.remove("active");
+                    });
+                }
             }
         });
-        
-        // ハンバーガーメニューの初期化
-        function initHamburgerMenu(header) {
-            var hamburgerBtn = header.querySelector(".hamburger-menu");
-            var navigation = header.querySelector(".header-navigation");
-            var menu = header.querySelector(".easy-header-menu");
-            var overlay = header.querySelector(".menu-overlay");
-            
-            if (!hamburgerBtn || !menu) return;
-            
-            // ハンバーガーボタンクリック
-            hamburgerBtn.addEventListener("click", function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                toggleMobileMenu();
-            });
-            
-            // オーバーレイクリック
-            if (overlay) {
-                overlay.addEventListener("click", function() {
-                    closeMobileMenu();
-                });
-            }
-            
-            // ESCキーでメニューを閉じる
-            document.addEventListener("keydown", function(e) {
-                if (e.key === "Escape") {
-                    closeMobileMenu();
-                }
-            });
-            
-            // ウィンドウリサイズ時の処理
-            window.addEventListener("resize", function() {
-                if (window.innerWidth > 768) {
-                    closeMobileMenu();
-                }
-            });
-            
-            // モバイルメニューのサブメニュークリック処理
-            var mobileMenuItems = menu.querySelectorAll(".menu-item-has-children > a");
-            mobileMenuItems.forEach(function(link) {
-                link.addEventListener("click", function(e) {
-                    if (window.innerWidth <= 768) {
-                        e.preventDefault();
-                        var parentItem = link.closest("li");
-                        var subMenu = parentItem.querySelector(".sub-menu");
-                        
-                        if (subMenu) {
-                            var isOpen = parentItem.classList.contains("sub-menu-open");
-                            
-                            // 同レベルの他のサブメニューを閉じる
-                            var siblings = parentItem.parentNode.children;
-                            for (var i = 0; i < siblings.length; i++) {
-                                if (siblings[i] !== parentItem) {
-                                    siblings[i].classList.remove("sub-menu-open");
-                                    var siblingSubMenu = siblings[i].querySelector(".sub-menu");
-                                    if (siblingSubMenu) {
-                                        siblingSubMenu.classList.remove("active");
-                                    }
-                                }
-                            }
-                            
-                            // 現在のサブメニューを切り替え
-                            if (isOpen) {
-                                parentItem.classList.remove("sub-menu-open");
-                                subMenu.classList.remove("active");
-                            } else {
-                                parentItem.classList.add("sub-menu-open");
-                                subMenu.classList.add("active");
-                            }
-                        }
-                    }
-                });
-            });
-            
-            function toggleMobileMenu() {
-                var isOpen = menu.classList.contains("active");
-                
-                if (isOpen) {
-                    closeMobileMenu();
-                } else {
-                    openMobileMenu();
-                }
-            }
-            
-            function openMobileMenu() {
-                menu.classList.add("active");
-                hamburgerBtn.classList.add("active");
-                if (overlay) overlay.classList.add("active");
-                document.body.style.overflow = "hidden";
-                hamburgerBtn.setAttribute("aria-label", "メニューを閉じる");
-            }
-            
-            function closeMobileMenu() {
-                menu.classList.remove("active");
-                hamburgerBtn.classList.remove("active");
-                if (overlay) overlay.classList.remove("active");
-                document.body.style.overflow = "";
-                hamburgerBtn.setAttribute("aria-label", "メニューを開く");
-                
-                // すべてのサブメニューを閉じる
-                menu.querySelectorAll(".menu-item-has-children").forEach(function(item) {
-                    item.classList.remove("sub-menu-open");
-                });
-                menu.querySelectorAll(".sub-menu").forEach(function(subMenu) {
-                    subMenu.classList.remove("active");
-                });
-            }
-        }
-        
-        // ドロップダウンメニューの初期化（デスクトップ用）
-        function initDropdownMenu(header) {
-            var menuItems = header.querySelectorAll(".header-navigation li");
-            
-            menuItems.forEach(function(item) {
-                var subMenu = item.querySelector(".sub-menu");
-                if (subMenu) {
-                    // マウスホバーイベント（デスクトップのみ）
-                    item.addEventListener("mouseenter", function() {
-                        if (window.innerWidth > 768) {
-                            // 孫メニュー以降の位置調整
-                            adjustSubmenuPosition(subMenu);
-                            
-                            // 1レベル目のサブメニュー
-                            if (item.closest(".sub-menu") === null) {
-                                subMenu.style.opacity = "1";
-                                subMenu.style.visibility = "visible";
-                                subMenu.style.transform = "translateY(0)";
-                            } else {
-                                // 2レベル目以降のサブメニュー
-                                subMenu.style.opacity = "1";
-                                subMenu.style.visibility = "visible";
-                                subMenu.style.transform = "translateX(0)";
-                            }
-                        }
-                    });
-                    
-                    item.addEventListener("mouseleave", function() {
-                        if (window.innerWidth > 768) {
-                            // 1レベル目のサブメニュー
-                            if (item.closest(".sub-menu") === null) {
-                                subMenu.style.opacity = "0";
-                                subMenu.style.visibility = "hidden";
-                                subMenu.style.transform = "translateY(-10px)";
-                            } else {
-                                // 2レベル目以降のサブメニュー
-                                subMenu.style.opacity = "0";
-                                subMenu.style.visibility = "hidden";
-                                if (subMenu.classList.contains("show-left")) {
-                                    subMenu.style.transform = "translateX(10px)";
-                                } else {
-                                    subMenu.style.transform = "translateX(-10px)";
-                                }
-                            }
-                        }
-                    });
-                }
-            });
-            
-            // サブメニューの位置調整関数
-            function adjustSubmenuPosition(subMenu) {
-                // 孫メニュー以降の場合のみ実行
-                if (subMenu.closest(".sub-menu")) {
-                    var rect = subMenu.getBoundingClientRect();
-                    var windowWidth = window.innerWidth;
-                    
-                    // 右端にはみ出る場合は左に表示
-                    if (rect.right > windowWidth - 20) {
-                        subMenu.classList.add("show-left");
-                    } else {
-                        subMenu.classList.remove("show-left");
-                    }
-                }
-            }
-            
-            // 外側クリックでサブメニューを閉じる（デスクトップのみ）
-            document.addEventListener("click", function(e) {
-                if (window.innerWidth > 768 && !header.contains(e.target)) {
-                    header.querySelectorAll(".sub-menu").forEach(function(menu) {
-                        menu.style.opacity = "0";
-                        menu.style.visibility = "hidden";
-                        if (menu.closest(".sub-menu") === null) {
-                            menu.style.transform = "translateY(-10px)";
-                        } else {
-                            menu.style.transform = "translateX(-10px)";
-                        }
-                    });
-                }
-            });
-        }
         </script>
         <?php
     }
@@ -1136,11 +1012,7 @@ class EasyHeaderMaker {
                     document.body.insertBefore(headerContainer.firstElementChild, document.body.firstChild);
                 }
                 
-                // ドロップダウンメニューを初期化
-                var header = document.querySelector(".easy-custom-header");
-                if (header && typeof initDropdownMenu === 'function') {
-                    initDropdownMenu(header);
-                }
+
                 <?php endif; ?>
             }
         });
@@ -1162,6 +1034,9 @@ class EasyHeaderMaker {
         $header_bg_color = get_post_meta($post->ID, '_easy_header_bg_color', true) ?: '#ffffff';
         $header_text_color = get_post_meta($post->ID, '_easy_header_text_color', true) ?: '#000000';
         $header_logo_width = get_post_meta($post->ID, '_easy_header_logo_width', true) ?: '200';
+        $header_logo_width_mobile = get_post_meta($post->ID, '_easy_header_logo_width_mobile', true) ?: '120';
+        $header_subtitle_bg_color = get_post_meta($post->ID, '_easy_header_subtitle_bg_color', true) ?: '#ddd';
+        $header_subtitle_text_color = get_post_meta($post->ID, '_easy_header_subtitle_text_color', true) ?: '#ffffff';
         $header_layout = get_post_meta($post->ID, '_easy_header_layout', true) ?: 'center';
         $header_link_url = get_post_meta($post->ID, '_easy_header_link_url', true);
         $header_menu_id = get_post_meta($post->ID, '_easy_header_menu_id', true);
@@ -1277,6 +1152,39 @@ class EasyHeaderMaker {
                         </td>
                     </tr>
                     <tr>
+                        <th scope="row">ロゴ幅（スマホ）</th>
+                        <td>
+                            <label>
+                                <input type="radio" name="easy_header_logo_width_mobile" value="auto" <?php checked($header_logo_width_mobile, 'auto'); ?> />
+                                オリジナルサイズ
+                            </label><br />
+                            <label style="margin-top: 5px; display: inline-block;">
+                                <input type="radio" name="easy_header_logo_width_mobile" value="80" <?php checked($header_logo_width_mobile, '80'); ?> />
+                                80px
+                            </label><br />
+                            <label style="margin-top: 5px; display: inline-block;">
+                                <input type="radio" name="easy_header_logo_width_mobile" value="120" <?php checked($header_logo_width_mobile, '120'); ?> />
+                                120px
+                            </label><br />
+                            <label style="margin-top: 5px; display: inline-block;">
+                                <input type="radio" name="easy_header_logo_width_mobile" value="150" <?php checked($header_logo_width_mobile, '150'); ?> />
+                                150px
+                            </label><br />
+                            <label style="margin-top: 10px; display: inline-block;">
+                                <input type="radio" name="easy_header_logo_width_mobile" value="custom" <?php 
+                                    if (!in_array($header_logo_width_mobile, array('auto', '80', '120', '150'))) {
+                                        echo 'checked="checked"';
+                                    }
+                                ?> />
+                                カスタム：
+                                <input type="number" id="custom_logo_width_mobile" name="easy_header_logo_width_mobile_custom" 
+                                       value="<?php echo !in_array($header_logo_width_mobile, array('auto', '80', '120', '150')) ? esc_attr($header_logo_width_mobile) : '100'; ?>" 
+                                       min="30" max="300" step="5" style="width: 80px; margin-left: 5px;" />px
+                            </label>
+                            <p class="description">スマホでのロゴ画像の表示幅を設定します。</p>
+                        </td>
+                    </tr>
+                    <tr>
                         <th scope="row">ヘッダータイトル</th>
                         <td>
                             <input type="text" id="easy_header_title" name="easy_header_title" value="<?php echo esc_attr($header_title); ?>" style="width: 100%; max-width: 400px;" />
@@ -1288,6 +1196,20 @@ class EasyHeaderMaker {
                         <td>
                             <input type="text" id="easy_header_subtitle" name="easy_header_subtitle" value="<?php echo esc_attr($header_subtitle); ?>" style="width: 100%; max-width: 400px;" />
                             <p class="description">タイトル下に表示するサブタイトルを入力してください（任意）。</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">サブタイトル背景色</th>
+                        <td>
+                            <input type="color" id="easy_header_subtitle_bg_color" name="easy_header_subtitle_bg_color" value="<?php echo esc_attr($header_subtitle_bg_color === 'rgba(0,0,0,0.1)' ? '#1a1a1a' : $header_subtitle_bg_color); ?>" />
+                            <p class="description">サブタイトルの背景色を選択してください。</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">サブタイトル文字色</th>
+                        <td>
+                            <input type="color" id="easy_header_subtitle_text_color" name="easy_header_subtitle_text_color" value="<?php echo esc_attr($header_subtitle_text_color === 'inherit' ? '#000000' : $header_subtitle_text_color); ?>" />
+                            <p class="description">サブタイトルの文字色を選択してください。</p>
                         </td>
                     </tr>
                     <tr>
@@ -1362,6 +1284,13 @@ class EasyHeaderMaker {
                 }
             });
             
+            // カスタムスマホロゴ幅の処理
+            $('input[name="easy_header_logo_width_mobile"]').change(function() {
+                if ($(this).val() === 'custom') {
+                    $('#custom_logo_width_mobile').focus();
+                }
+            });
+            
             // カスタムヘッダー幅の処理
             $('input[name="easy_header_width"]').change(function() {
                 if ($(this).val() === 'custom') {
@@ -1372,6 +1301,10 @@ class EasyHeaderMaker {
             // カスタム値が入力された場合、対応するラジオボタンを選択
             $('#custom_logo_width').on('input', function() {
                 $('input[name="easy_header_logo_width"][value="custom"]').prop('checked', true);
+            });
+            
+            $('#custom_logo_width_mobile').on('input', function() {
+                $('input[name="easy_header_logo_width_mobile"][value="custom"]').prop('checked', true);
             });
             
             $('#custom_header_width').on('input', function() {
@@ -1476,6 +1409,27 @@ class EasyHeaderMaker {
                 update_post_meta($post_id, '_easy_header_width', sanitize_text_field($_POST['easy_header_width']));
             }
         }
+        
+        // スマホ用ロゴ幅の処理
+        if (isset($_POST['easy_header_logo_width_mobile'])) {
+            if ($_POST['easy_header_logo_width_mobile'] === 'custom' && isset($_POST['easy_header_logo_width_mobile_custom'])) {
+                update_post_meta($post_id, '_easy_header_logo_width_mobile', intval($_POST['easy_header_logo_width_mobile_custom']));
+            } else {
+                update_post_meta($post_id, '_easy_header_logo_width_mobile', sanitize_text_field($_POST['easy_header_logo_width_mobile']));
+            }
+        }
+        
+        // サブタイトル背景色の処理
+        if (isset($_POST['easy_header_subtitle_bg_color'])) {
+            update_post_meta($post_id, '_easy_header_subtitle_bg_color', sanitize_text_field($_POST['easy_header_subtitle_bg_color']));
+        }
+        
+        // サブタイトル文字色の処理
+        if (isset($_POST['easy_header_subtitle_text_color_inherit']) && $_POST['easy_header_subtitle_text_color_inherit'] == '1') {
+            update_post_meta($post_id, '_easy_header_subtitle_text_color', 'inherit');
+        } elseif (isset($_POST['easy_header_subtitle_text_color'])) {
+            update_post_meta($post_id, '_easy_header_subtitle_text_color', sanitize_hex_color($_POST['easy_header_subtitle_text_color']));
+        }
     }
     
     /**
@@ -1529,6 +1483,23 @@ class EasyHeaderMaker {
             update_option('easy_header_front_link_url', sanitize_url($_POST['easy_header_front_link_url']));
             update_option('easy_header_front_menu_id', intval($_POST['easy_header_front_menu_id']));
             
+            // モバイル用ロゴ幅の処理
+            if (isset($_POST['easy_header_front_logo_width_mobile'])) {
+                if ($_POST['easy_header_front_logo_width_mobile'] === 'custom' && isset($_POST['easy_header_front_logo_width_mobile_custom'])) {
+                    update_option('easy_header_front_logo_width_mobile', intval($_POST['easy_header_front_logo_width_mobile_custom']));
+                } else {
+                    update_option('easy_header_front_logo_width_mobile', sanitize_text_field($_POST['easy_header_front_logo_width_mobile']));
+                }
+            }
+            
+            // サブタイトル色設定の処理
+            if (isset($_POST['easy_header_front_subtitle_bg_color'])) {
+                update_option('easy_header_front_subtitle_bg_color', sanitize_text_field($_POST['easy_header_front_subtitle_bg_color']));
+            }
+            if (isset($_POST['easy_header_front_subtitle_text_color'])) {
+                update_option('easy_header_front_subtitle_text_color', sanitize_text_field($_POST['easy_header_front_subtitle_text_color']));
+            }
+            
             // ヘッダー幅の処理
             if ($_POST['easy_header_front_width'] === 'custom' && isset($_POST['easy_header_front_width_custom'])) {
                 update_option('easy_header_front_width', intval($_POST['easy_header_front_width_custom']));
@@ -1547,6 +1518,9 @@ class EasyHeaderMaker {
         $front_bg_color = get_option('easy_header_front_bg_color', '#ffffff');
         $front_text_color = get_option('easy_header_front_text_color', '#000000');
         $front_logo_width = get_option('easy_header_front_logo_width', '200');
+        $front_logo_width_mobile = get_option('easy_header_front_logo_width_mobile', '120');
+        $front_subtitle_bg_color = get_option('easy_header_front_subtitle_bg_color', '#ddd');
+        $front_subtitle_text_color = get_option('easy_header_front_subtitle_text_color', '#ffffff');
         $front_layout = get_option('easy_header_front_layout', 'center');
         $front_link_url = get_option('easy_header_front_link_url', '');
         $front_menu_id = get_option('easy_header_front_menu_id', '');
