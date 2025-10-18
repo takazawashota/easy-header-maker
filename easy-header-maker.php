@@ -106,8 +106,9 @@ class EasyHeaderMaker {
      * メタフィールドの登録
      */
     public function register_meta_fields() {
-        $post_types = array('post', 'page');
-        foreach ($post_types as $post_type) {
+        $enabled_post_types = get_option('easy_header_enabled_post_types', array('page'));
+        
+        foreach ($enabled_post_types as $post_type) {
             register_post_meta($post_type, '_easy_header_enable', array(
                 'type' => 'boolean',
                 'single' => true,
@@ -216,11 +217,13 @@ class EasyHeaderMaker {
      * メタボックスの追加
      */
     public function add_meta_boxes() {
+        $enabled_post_types = get_option('easy_header_enabled_post_types', array('page'));
+        
         add_meta_box(
             'easy_header_meta_box',
             '独自ヘッダー設定',
             array($this, 'meta_box_callback'),
-            array('post', 'page'),
+            $enabled_post_types,
             'normal',
             'high'
         );
@@ -240,39 +243,11 @@ class EasyHeaderMaker {
             $post_id = $post->ID;
             $enable_custom_header = get_post_meta($post_id, '_easy_header_enable', true);
         }
-        // フロントページの場合
-        elseif (is_front_page()) {
-            // まず管理画面の設定をチェック
-            $front_enable = get_option('easy_header_front_enable', 0);
-            
-            if ($front_enable) {
-                // フロントページ用の設定を直接使用
-                return array(
-                    'enable_custom_header' => true,
-                    'header_logo' => get_option('easy_header_front_logo', ''),
-                    'header_title' => get_option('easy_header_front_title', '') ?: get_bloginfo('name'),
-                    'header_subtitle' => get_option('easy_header_front_subtitle', ''),
-                    'header_bg_color' => get_option('easy_header_front_bg_color', '#ffffff'),
-                    'header_text_color' => get_option('easy_header_front_text_color', '#000000'),
-                    'header_logo_width' => get_option('easy_header_front_logo_width', '200'),
-                    'header_logo_width_mobile' => get_option('easy_header_front_logo_width_mobile', '120'),
-                    'header_subtitle_bg_color' => get_option('easy_header_front_subtitle_bg_color', '#ddd'),
-                    'header_subtitle_text_color' => get_option('easy_header_front_subtitle_text_color', '#ffffff'),
-                    'header_layout' => get_option('easy_header_front_layout', 'center'),
-                    'header_link_url' => get_option('easy_header_front_link_url', ''),
-                    'header_menu_id' => get_option('easy_header_front_menu_id', ''),
-                    'header_width' => get_option('easy_header_front_width', 'full'),
-                    'header_sticky_desktop' => get_option('easy_header_front_sticky_desktop', 0),
-                    'header_sticky_mobile' => get_option('easy_header_front_sticky_mobile', 0),
-                    'header_shadow' => get_option('easy_header_front_shadow', 0)
-                );
-            }
-            // 管理画面設定が無効の場合、静的フロントページの設定をチェック
-            elseif (get_option('show_on_front') == 'page') {
-                $post_id = get_option('page_on_front');
-                if ($post_id) {
-                    $enable_custom_header = get_post_meta($post_id, '_easy_header_enable', true);
-                }
+        // フロントページの場合（静的フロントページのみ）
+        elseif (is_front_page() && get_option('show_on_front') == 'page') {
+            $post_id = get_option('page_on_front');
+            if ($post_id) {
+                $enable_custom_header = get_post_meta($post_id, '_easy_header_enable', true);
             }
         }
         
@@ -1603,14 +1578,12 @@ class EasyHeaderMaker {
      * 管理画面メニューを追加
      */
     public function add_admin_menu() {
-        add_menu_page(
+        add_options_page(
             'Easy Header Maker',
             'Header Maker',
             'manage_options',
             'easy-header-maker',
-            array($this, 'admin_page'),
-            'dashicons-editor-kitchensink',
-            30
+            array($this, 'admin_page')
         );
     }
     
@@ -1620,86 +1593,24 @@ class EasyHeaderMaker {
     public function admin_page() {
         // 設定の保存
         if (isset($_POST['submit']) && wp_verify_nonce($_POST['easy_header_nonce'], 'easy_header_settings')) {
-            // フロントページの設定を保存
-            update_option('easy_header_front_enable', isset($_POST['easy_header_front_enable']) ? 1 : 0);
-            update_option('easy_header_front_logo', sanitize_url($_POST['easy_header_front_logo']));
-            update_option('easy_header_front_title', sanitize_text_field($_POST['easy_header_front_title']));
-            update_option('easy_header_front_subtitle', sanitize_text_field($_POST['easy_header_front_subtitle']));
-            update_option('easy_header_front_bg_color', sanitize_hex_color($_POST['easy_header_front_bg_color']));
-            update_option('easy_header_front_text_color', sanitize_hex_color($_POST['easy_header_front_text_color']));
-            
-            // ロゴ幅の処理
-            if ($_POST['easy_header_front_logo_width'] === 'custom' && isset($_POST['easy_header_front_logo_width_custom'])) {
-                update_option('easy_header_front_logo_width', intval($_POST['easy_header_front_logo_width_custom']));
-            } else {
-                update_option('easy_header_front_logo_width', sanitize_text_field($_POST['easy_header_front_logo_width']));
-            }
-            
-            update_option('easy_header_front_layout', sanitize_text_field($_POST['easy_header_front_layout']));
-            update_option('easy_header_front_link_url', sanitize_url($_POST['easy_header_front_link_url']));
-            update_option('easy_header_front_menu_id', intval($_POST['easy_header_front_menu_id']));
-            
-            // モバイル用ロゴ幅の処理
-            if (isset($_POST['easy_header_front_logo_width_mobile'])) {
-                if ($_POST['easy_header_front_logo_width_mobile'] === 'custom' && isset($_POST['easy_header_front_logo_width_mobile_custom'])) {
-                    update_option('easy_header_front_logo_width_mobile', intval($_POST['easy_header_front_logo_width_mobile_custom']));
-                } else {
-                    update_option('easy_header_front_logo_width_mobile', sanitize_text_field($_POST['easy_header_front_logo_width_mobile']));
-                }
-            }
-            
-            // サブタイトル色設定の処理
-            if (isset($_POST['easy_header_front_subtitle_bg_color'])) {
-                update_option('easy_header_front_subtitle_bg_color', sanitize_text_field($_POST['easy_header_front_subtitle_bg_color']));
-            }
-            if (isset($_POST['easy_header_front_subtitle_text_color'])) {
-                update_option('easy_header_front_subtitle_text_color', sanitize_text_field($_POST['easy_header_front_subtitle_text_color']));
-            }
-            
-            // ヘッダー幅の処理
-            if ($_POST['easy_header_front_width'] === 'custom' && isset($_POST['easy_header_front_width_custom'])) {
-                update_option('easy_header_front_width', intval($_POST['easy_header_front_width_custom']));
-            } else {
-                update_option('easy_header_front_width', sanitize_text_field($_POST['easy_header_front_width']));
-            }
-            
-            // スティッキー設定の処理
-            update_option('easy_header_front_sticky_desktop', isset($_POST['easy_header_front_sticky_desktop']) ? 1 : 0);
-            update_option('easy_header_front_sticky_mobile', isset($_POST['easy_header_front_sticky_mobile']) ? 1 : 0);
-            
-            // シャドウ設定の処理
-            update_option('easy_header_front_shadow', isset($_POST['easy_header_front_shadow']) ? 1 : 0);
+            // 投稿タイプ設定を保存
+            $enabled_post_types = isset($_POST['easy_header_enabled_post_types']) ? $_POST['easy_header_enabled_post_types'] : array('page');
+            update_option('easy_header_enabled_post_types', array_map('sanitize_text_field', $enabled_post_types));
             
             echo '<div class="notice notice-success is-dismissible"><p>設定が保存されました。</p></div>';
         }
         
         // 現在の設定を取得
-        $front_enable = get_option('easy_header_front_enable', 0);
-        $front_logo = get_option('easy_header_front_logo', '');
-        $front_title = get_option('easy_header_front_title', '');
-        $front_subtitle = get_option('easy_header_front_subtitle', '');
-        $front_bg_color = get_option('easy_header_front_bg_color', '#ffffff');
-        $front_text_color = get_option('easy_header_front_text_color', '#000000');
-        $front_logo_width = get_option('easy_header_front_logo_width', '200');
-        $front_logo_width_mobile = get_option('easy_header_front_logo_width_mobile', '120');
-        $front_subtitle_bg_color = get_option('easy_header_front_subtitle_bg_color', '#ddd');
-        $front_subtitle_text_color = get_option('easy_header_front_subtitle_text_color', '#ffffff');
-        $front_layout = get_option('easy_header_front_layout', 'center');
-        $front_link_url = get_option('easy_header_front_link_url', '');
-        $front_menu_id = get_option('easy_header_front_menu_id', '');
-        $front_width = get_option('easy_header_front_width', 'full');
-        $front_sticky_desktop = get_option('easy_header_front_sticky_desktop', 0);
-        $front_sticky_mobile = get_option('easy_header_front_sticky_mobile', 0);
-        $front_shadow = get_option('easy_header_front_shadow', 0);
+        $enabled_post_types = get_option('easy_header_enabled_post_types', array('page'));
         ?>
         <div class="wrap">
-            <h1>Easy Header Maker 設定</h1>
+            <h1>Easy Header Maker</h1>
             
             <div style="max-width: 800px; margin: 20px 0;">
                 <h2>使い方</h2>
                 <ol>
-                    <li><strong>個別ページ設定</strong>：投稿・ページ編集画面の「独自ヘッダー設定」メタボックスで各ページごとに設定</li>
-                    <li><strong>フロントページ設定</strong>：下記の設定でサイトのトップページ用ヘッダーを設定</li>
+                    <li><strong>基本設定</strong>：下記の「対象投稿タイプ」で、ヘッダー設定を利用したい投稿タイプを選択</li>
+                    <li><strong>個別ページ設定</strong>：選択した投稿タイプの編集画面で「独自ヘッダー設定」メタボックスが表示され、各ページごとに設定可能</li>
                     <li><strong>ナビゲーションメニュー</strong>：「外観」→「メニュー」で作成したメニューをヘッダーに表示可能</li>
                     <li><strong>レスポンシブ対応</strong>：モバイルデバイスでも適切に表示されます</li>
                 </ol>
@@ -1708,221 +1619,33 @@ class EasyHeaderMaker {
             <form method="post" action="">
                 <?php wp_nonce_field('easy_header_settings', 'easy_header_nonce'); ?>
                 
-                <h2>フロントページ設定</h2>
+                <h2>基本設定</h2>
                 
                 <table class="form-table">
                     <tr>
-                        <th scope="row">フロントページヘッダーを有効化</th>
+                        <th scope="row">対象投稿タイプ</th>
                         <td>
-                            <label>
-                                <input type="checkbox" name="easy_header_front_enable" value="1" <?php checked($front_enable, 1); ?> />
-                                フロントページに独自ヘッダーを表示する
-                            </label>
-                            <p class="description">個別ページの設定より優先されます。</p>
+                            <?php
+                            $all_post_types = get_post_types(array('public' => true), 'objects');
+                            foreach ($all_post_types as $post_type_obj) {
+                                if ($post_type_obj->name === 'attachment') continue;
+                                $checked = in_array($post_type_obj->name, $enabled_post_types) ? 'checked' : '';
+                                echo '<label style="display: block; margin-bottom: 5px;">';
+                                echo '<input type="checkbox" name="easy_header_enabled_post_types[]" value="' . esc_attr($post_type_obj->name) . '" ' . $checked . ' />';
+                                echo esc_html($post_type_obj->label) . ' (' . esc_html($post_type_obj->name) . ')';
+                                echo '</label>';
+                            }
+                            ?>
+                            <p class="description">チェックした投稿タイプの編集画面に「独自ヘッダー設定」メタボックスが表示されます。</p>
                         </td>
                     </tr>
                 </table>
                 
-                <div id="front-header-settings" style="<?php echo !$front_enable ? 'display: none;' : ''; ?>">
-                    <table class="form-table">
-                        <tr>
-                            <th scope="row">レイアウト</th>
-                            <td>
-                                <label>
-                                    <input type="radio" name="easy_header_front_layout" value="center" <?php checked($front_layout, 'center'); ?> />
-                                    中央寄せ（縦レイアウト）
-                                </label><br />
-                                <label style="margin-top: 5px; display: inline-block;">
-                                    <input type="radio" name="easy_header_front_layout" value="horizontal" <?php checked($front_layout, 'horizontal'); ?> />
-                                    横並びレイアウト
-                                </label>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th scope="row">ヘッダー横幅</th>
-                            <td>
-                                <label>
-                                    <input type="radio" name="easy_header_front_width" value="full" <?php checked($front_width, 'full'); ?> />
-                                    フル幅
-                                </label><br />
-                                <label style="margin-top: 5px; display: inline-block;">
-                                    <input type="radio" name="easy_header_front_width" value="1200" <?php checked($front_width, '1200'); ?> />
-                                    1200px
-                                </label><br />
-                                <label style="margin-top: 5px; display: inline-block;">
-                                    <input type="radio" name="easy_header_front_width" value="1000" <?php checked($front_width, '1000'); ?> />
-                                    1000px
-                                </label><br />
-                                <label style="margin-top: 5px; display: inline-block;">
-                                    <input type="radio" name="easy_header_front_width" value="800" <?php checked($front_width, '800'); ?> />
-                                    800px
-                                </label><br />
-                                <label style="margin-top: 10px; display: inline-block;">
-                                    <input type="radio" name="easy_header_front_width" value="custom" <?php 
-                                        if (!in_array($front_width, array('full', '1200', '1000', '800'))) {
-                                            echo 'checked="checked"';
-                                        }
-                                    ?> />
-                                    カスタム：
-                                    <input type="number" id="front_custom_header_width" name="easy_header_front_width_custom" 
-                                           value="<?php echo !in_array($front_width, array('full', '1200', '1000', '800')) ? esc_attr($front_width) : '960'; ?>" 
-                                           min="300" max="1920" step="10" style="width: 80px; margin-left: 5px;" />px
-                                </label>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th scope="row">ヘッダーロゴ</th>
-                            <td>
-                                <input type="url" id="easy_header_front_logo" name="easy_header_front_logo" value="<?php echo esc_attr($front_logo); ?>" style="width: 100%; max-width: 400px;" />
-                                <button type="button" id="upload_front_logo_button" class="button">ロゴを選択</button>
-                                <?php if ($front_logo): ?>
-                                    <div style="margin-top: 10px;">
-                                        <img src="<?php echo esc_url($front_logo); ?>" style="max-width: 200px; height: auto;" />
-                                    </div>
-                                <?php endif; ?>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th scope="row">ロゴ幅</th>
-                            <td>
-                                <label>
-                                    <input type="radio" name="easy_header_front_logo_width" value="auto" <?php checked($front_logo_width, 'auto'); ?> />
-                                    オリジナルサイズ
-                                </label><br />
-                                <label style="margin-top: 5px; display: inline-block;">
-                                    <input type="radio" name="easy_header_front_logo_width" value="150" <?php checked($front_logo_width, '150'); ?> />
-                                    150px
-                                </label><br />
-                                <label style="margin-top: 5px; display: inline-block;">
-                                    <input type="radio" name="easy_header_front_logo_width" value="200" <?php checked($front_logo_width, '200'); ?> />
-                                    200px
-                                </label><br />
-                                <label style="margin-top: 5px; display: inline-block;">
-                                    <input type="radio" name="easy_header_front_logo_width" value="300" <?php checked($front_logo_width, '300'); ?> />
-                                    300px
-                                </label><br />
-                                <label style="margin-top: 10px; display: inline-block;">
-                                    <input type="radio" name="easy_header_front_logo_width" value="custom" <?php 
-                                        if (!in_array($front_logo_width, array('auto', '150', '200', '300'))) {
-                                            echo 'checked="checked"';
-                                        }
-                                    ?> />
-                                    カスタム：
-                                    <input type="number" id="front_custom_logo_width" name="easy_header_front_logo_width_custom" 
-                                           value="<?php echo !in_array($front_logo_width, array('auto', '150', '200', '300')) ? esc_attr($front_logo_width) : '250'; ?>" 
-                                           min="50" max="800" step="10" style="width: 80px; margin-left: 5px;" />px
-                                </label>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th scope="row">ヘッダータイトル</th>
-                            <td>
-                                <input type="text" name="easy_header_front_title" value="<?php echo esc_attr($front_title); ?>" style="width: 100%; max-width: 400px;" />
-                                <p class="description">空の場合はサイトのタイトルが表示されます。</p>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th scope="row">ヘッダーサブタイトル</th>
-                            <td>
-                                <input type="text" name="easy_header_front_subtitle" value="<?php echo esc_attr($front_subtitle); ?>" style="width: 100%; max-width: 400px;" />
-                            </td>
-                        </tr>
-                        <tr>
-                            <th scope="row">リンクURL</th>
-                            <td>
-                                <input type="url" name="easy_header_front_link_url" value="<?php echo esc_attr($front_link_url); ?>" style="width: 100%; max-width: 400px;" />
-                                <p class="description">ロゴやタイトルにリンクを設定する場合は、URLを入力してください（任意）。</p>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th scope="row">背景色</th>
-                            <td>
-                                <input type="color" name="easy_header_front_bg_color" value="<?php echo esc_attr($front_bg_color); ?>" />
-                            </td>
-                        </tr>
-                        <tr>
-                            <th scope="row">文字色</th>
-                            <td>
-                                <input type="color" name="easy_header_front_text_color" value="<?php echo esc_attr($front_text_color); ?>" />
-                            </td>
-                        </tr>
-                        <tr>
-                            <th scope="row">ナビゲーションメニュー</th>
-                            <td>
-                                <select name="easy_header_front_menu_id" style="max-width: 300px;">
-                                    <option value="">メニューを選択してください</option>
-                                    <?php
-                                    $menus = wp_get_nav_menus();
-                                    foreach ($menus as $menu) {
-                                        echo '<option value="' . esc_attr($menu->term_id) . '"' . selected($front_menu_id, $menu->term_id, false) . '>' . esc_html($menu->name) . '</option>';
-                                    }
-                                    ?>
-                                </select>
-                            </td>
-                        </tr>
-                    </table>
-                </div>
-                
-                <?php submit_button(); ?>
+                <p class="submit">
+                    <input type="submit" name="submit" class="button-primary" value="設定を保存" />
+                </p>
             </form>
         </div>
-        
-        <script>
-        jQuery(document).ready(function($) {
-            // フロントページヘッダーの有効化チェック
-            $('input[name="easy_header_front_enable"]').change(function() {
-                if ($(this).is(':checked')) {
-                    $('#front-header-settings').slideDown();
-                } else {
-                    $('#front-header-settings').slideUp();
-                }
-            });
-            
-            // フロントページロゴアップローダー
-            $('#upload_front_logo_button').click(function(e) {
-                e.preventDefault();
-                
-                var mediaUploader = wp.media({
-                    title: 'ロゴ画像を選択',
-                    button: {
-                        text: 'この画像を使用'
-                    },
-                    multiple: false,
-                    library: {
-                        type: 'image'
-                    }
-                });
-                
-                mediaUploader.on('select', function() {
-                    var attachment = mediaUploader.state().get('selection').first().toJSON();
-                    $('#easy_header_front_logo').val(attachment.url);
-                });
-                
-                mediaUploader.open();
-            });
-            
-            // カスタム値の処理
-            $('input[name="easy_header_front_logo_width"]').change(function() {
-                if ($(this).val() === 'custom') {
-                    $('#front_custom_logo_width').focus();
-                }
-            });
-            
-            $('input[name="easy_header_front_width"]').change(function() {
-                if ($(this).val() === 'custom') {
-                    $('#front_custom_header_width').focus();
-                }
-            });
-            
-            $('#front_custom_logo_width').on('input', function() {
-                $('input[name="easy_header_front_logo_width"][value="custom"]').prop('checked', true);
-            });
-            
-            $('#front_custom_header_width').on('input', function() {
-                $('input[name="easy_header_front_width"][value="custom"]').prop('checked', true);
-            });
-        });
-        </script>
         <?php
     }
     
