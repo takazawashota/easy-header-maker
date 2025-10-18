@@ -210,6 +210,18 @@ class EasyHeaderMaker {
                 'single' => true,
                 'default' => false
             ));
+            
+            register_post_meta($post_type, '_easy_header_custom_css', array(
+                'type' => 'string',
+                'single' => true,
+                'default' => ''
+            ));
+            
+            register_post_meta($post_type, '_easy_header_custom_js', array(
+                'type' => 'string',
+                'single' => true,
+                'default' => ''
+            ));
         }
     }
     
@@ -278,7 +290,9 @@ class EasyHeaderMaker {
             'header_width' => get_post_meta($post_id, '_easy_header_width', true) ?: 'full',
             'header_sticky_desktop' => get_post_meta($post_id, '_easy_header_sticky_desktop', true),
             'header_sticky_mobile' => get_post_meta($post_id, '_easy_header_sticky_mobile', true),
-            'header_shadow' => get_post_meta($post_id, '_easy_header_shadow', true)
+            'header_shadow' => get_post_meta($post_id, '_easy_header_shadow', true),
+            'header_custom_css' => get_post_meta($post_id, '_easy_header_custom_css', true),
+            'header_custom_js' => get_post_meta($post_id, '_easy_header_custom_js', true)
         );
     }
     
@@ -890,6 +904,11 @@ class EasyHeaderMaker {
             button.hamburger-menu{
                 color: #000 !important;
             }
+            
+            /* カスタムCSS */
+            <?php if (!empty($header_custom_css)): ?>
+            <?php echo $header_custom_css; ?>
+            <?php endif; ?>
         </style>
         <?php
     }
@@ -1075,6 +1094,11 @@ class EasyHeaderMaker {
                 window.addEventListener('resize', handleResize);
                 handleScroll(); // 初期実行
             }
+            
+            // カスタムJavaScript
+            <?php if (!empty($header_custom_js)): ?>
+            <?php echo $header_custom_js; ?>
+            <?php endif; ?>
         });
         </script>
         <?php
@@ -1141,6 +1165,8 @@ class EasyHeaderMaker {
         $header_sticky_desktop = get_post_meta($post->ID, '_easy_header_sticky_desktop', true);
         $header_sticky_mobile = get_post_meta($post->ID, '_easy_header_sticky_mobile', true);
         $header_shadow = get_post_meta($post->ID, '_easy_header_shadow', true);
+        $header_custom_css = get_post_meta($post->ID, '_easy_header_custom_css', true);
+        $header_custom_js = get_post_meta($post->ID, '_easy_header_custom_js', true);
         ?>
         <div style="max-width: 800px;">
             <table class="form-table">
@@ -1373,6 +1399,20 @@ class EasyHeaderMaker {
                             <p class="description">チェックすると、ヘッダーの下部に薄い影が表示されます。</p>
                         </td>
                     </tr>
+                    <tr>
+                        <th scope="row">カスタムCSS</th>
+                        <td>
+                            <textarea name="easy_header_custom_css" rows="8" style="width: 100%; max-width: 600px; font-family: Monaco, Consolas, 'Courier New', monospace; font-size: 12px;"><?php echo esc_textarea($header_custom_css); ?></textarea>
+                            <p class="description">このヘッダー専用のカスタムCSSを記述できます。セレクタは .easy-custom-header で始めることを推奨します。</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">カスタムJavaScript</th>
+                        <td>
+                            <textarea name="easy_header_custom_js" rows="8" style="width: 100%; max-width: 600px; font-family: Monaco, Consolas, 'Courier New', monospace; font-size: 12px;"><?php echo esc_textarea($header_custom_js); ?></textarea>
+                            <p class="description">このヘッダー専用のカスタムJavaScriptを記述できます。DOMContentLoadedイベント内で実行されます。</p>
+                        </td>
+                    </tr>
                 </table>
             </div>
         </div>
@@ -1561,6 +1601,16 @@ class EasyHeaderMaker {
         
         // シャドウ設定の処理
         update_post_meta($post_id, '_easy_header_shadow', isset($_POST['easy_header_shadow']) ? 1 : 0);
+        
+        // カスタムCSSの処理
+        if (isset($_POST['easy_header_custom_css'])) {
+            update_post_meta($post_id, '_easy_header_custom_css', wp_unslash($_POST['easy_header_custom_css']));
+        }
+        
+        // カスタムJSの処理
+        if (isset($_POST['easy_header_custom_js'])) {
+            update_post_meta($post_id, '_easy_header_custom_js', wp_unslash($_POST['easy_header_custom_js']));
+        }
     }
     
     /**
