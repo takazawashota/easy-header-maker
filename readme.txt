@@ -27,11 +27,10 @@ Ideal for landing pages, promotional pages, or sites that require different head
 
 = How to Use =
 
-1. Install and activate the plugin  
-2. ヘッダーを追加したい投稿・固定ページ、カスタム投稿ページのエディタ画面へ移動します
-3. 
-4. Assign it to individual posts, pages, or custom post types  
-5. Save and preview your changes  
+1. Install and activate the plugin
+2. Go to the editor screen of the post, static page, or custom post page to which you want to add a header
+3. The editor will include settings that are added by the plugin
+4. Save and preview your changes
 
 = Use Cases =
 
@@ -54,7 +53,7 @@ Ideal for landing pages, promotional pages, or sites that require different head
 1. Download the plugin as a ZIP file  
 2. Upload it from the WordPress admin panel (Plugins > Add New > Upload Plugin)  
 3. Activate **Easy Header Maker**  
-4. Start creating headers from **Appearance > Easy Header Maker**
+4. Start creating your header from the "Easy Header Maker" that has been added to the editor screen of any post, static page, or custom post type.
 
 == Frequently Asked Questions ==
 
