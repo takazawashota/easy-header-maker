@@ -1207,27 +1207,15 @@ class EasyHeaderMaker {
                                 <input type="radio" name="easy_header_width" value="full" <?php checked($header_width, 'full'); ?> />
                                 フル幅
                             </label><br />
-                            <label style="margin-top: 5px; display: inline-block;">
-                                <input type="radio" name="easy_header_width" value="1200" <?php checked($header_width, '1200'); ?> />
-                                1200px
-                            </label><br />
-                            <label style="margin-top: 5px; display: inline-block;">
-                                <input type="radio" name="easy_header_width" value="1000" <?php checked($header_width, '1000'); ?> />
-                                1000px
-                            </label><br />
-                            <label style="margin-top: 5px; display: inline-block;">
-                                <input type="radio" name="easy_header_width" value="800" <?php checked($header_width, '800'); ?> />
-                                800px
-                            </label><br />
                             <label style="margin-top: 10px; display: inline-block;">
                                 <input type="radio" name="easy_header_width" value="custom" <?php 
-                                    if (!in_array($header_width, array('full', '1200', '1000', '800'))) {
+                                    if ($header_width !== 'full') {
                                         echo 'checked="checked"';
                                     }
                                 ?> />
                                 カスタム：
                                 <input type="number" id="custom_header_width" name="easy_header_width_custom" 
-                                       value="<?php echo !in_array($header_width, array('full', '1200', '1000', '800')) ? esc_attr($header_width) : '960'; ?>" 
+                                       value="<?php echo $header_width !== 'full' ? esc_attr($header_width) : '960'; ?>" 
                                        min="300" max="1920" step="10" style="width: 80px; margin-left: 5px;" />px
                             </label>
                             <p class="description">ヘッダー内容の最大横幅を設定します。フル幅の場合はコンテナの幅いっぱいに表示されます。</p>
@@ -1252,67 +1240,19 @@ class EasyHeaderMaker {
                     <tr>
                         <th scope="row">ロゴ幅</th>
                         <td>
-                            <label>
-                                <input type="radio" name="easy_header_logo_width" value="auto" <?php checked($header_logo_width, 'auto'); ?> />
-                                オリジナルサイズ
-                            </label><br />
-                            <label style="margin-top: 5px; display: inline-block;">
-                                <input type="radio" name="easy_header_logo_width" value="150" <?php checked($header_logo_width, '150'); ?> />
-                                150px
-                            </label><br />
-                            <label style="margin-top: 5px; display: inline-block;">
-                                <input type="radio" name="easy_header_logo_width" value="200" <?php checked($header_logo_width, '200'); ?> />
-                                200px
-                            </label><br />
-                            <label style="margin-top: 5px; display: inline-block;">
-                                <input type="radio" name="easy_header_logo_width" value="300" <?php checked($header_logo_width, '300'); ?> />
-                                300px
-                            </label><br />
-                            <label style="margin-top: 10px; display: inline-block;">
-                                <input type="radio" name="easy_header_logo_width" value="custom" <?php 
-                                    if (!in_array($header_logo_width, array('auto', '150', '200', '300'))) {
-                                        echo 'checked="checked"';
-                                    }
-                                ?> />
-                                カスタム：
-                                <input type="number" id="custom_logo_width" name="easy_header_logo_width_custom" 
-                                       value="<?php echo !in_array($header_logo_width, array('auto', '150', '200', '300')) ? esc_attr($header_logo_width) : '250'; ?>" 
-                                       min="50" max="800" step="10" style="width: 80px; margin-left: 5px;" />px
-                            </label>
-                            <p class="description">ロゴ画像の表示幅を設定します。高さは自動で調整されます。</p>
+                            <input type="number" id="easy_header_logo_width" name="easy_header_logo_width" 
+                                   value="<?php echo esc_attr($header_logo_width === 'auto' ? '200' : $header_logo_width); ?>" 
+                                   min="50" max="800" step="10" style="width: 100px;" />px
+                            <p class="description">ロゴ画像の表示幅をピクセル単位で設定します。高さは自動で調整されます。</p>
                         </td>
                     </tr>
                     <tr>
                         <th scope="row">ロゴ幅（スマホ）</th>
                         <td>
-                            <label>
-                                <input type="radio" name="easy_header_logo_width_mobile" value="auto" <?php checked($header_logo_width_mobile, 'auto'); ?> />
-                                オリジナルサイズ
-                            </label><br />
-                            <label style="margin-top: 5px; display: inline-block;">
-                                <input type="radio" name="easy_header_logo_width_mobile" value="80" <?php checked($header_logo_width_mobile, '80'); ?> />
-                                80px
-                            </label><br />
-                            <label style="margin-top: 5px; display: inline-block;">
-                                <input type="radio" name="easy_header_logo_width_mobile" value="120" <?php checked($header_logo_width_mobile, '120'); ?> />
-                                120px
-                            </label><br />
-                            <label style="margin-top: 5px; display: inline-block;">
-                                <input type="radio" name="easy_header_logo_width_mobile" value="150" <?php checked($header_logo_width_mobile, '150'); ?> />
-                                150px
-                            </label><br />
-                            <label style="margin-top: 10px; display: inline-block;">
-                                <input type="radio" name="easy_header_logo_width_mobile" value="custom" <?php 
-                                    if (!in_array($header_logo_width_mobile, array('auto', '80', '120', '150'))) {
-                                        echo 'checked="checked"';
-                                    }
-                                ?> />
-                                カスタム：
-                                <input type="number" id="custom_logo_width_mobile" name="easy_header_logo_width_mobile_custom" 
-                                       value="<?php echo !in_array($header_logo_width_mobile, array('auto', '80', '120', '150')) ? esc_attr($header_logo_width_mobile) : '100'; ?>" 
-                                       min="30" max="300" step="5" style="width: 80px; margin-left: 5px;" />px
-                            </label>
-                            <p class="description">スマホでのロゴ画像の表示幅を設定します。</p>
+                            <input type="number" id="easy_header_logo_width_mobile" name="easy_header_logo_width_mobile" 
+                                   value="<?php echo esc_attr($header_logo_width_mobile === 'auto' ? '120' : $header_logo_width_mobile); ?>" 
+                                   min="30" max="300" step="5" style="width: 100px;" />px
+                            <p class="description">スマホでのロゴ画像の表示幅をピクセル単位で設定します。</p>
                         </td>
                     </tr>
                     <tr>
@@ -1446,20 +1386,6 @@ class EasyHeaderMaker {
                 }
             });
             
-            // カスタムロゴ幅の処理
-            $('input[name="easy_header_logo_width"]').change(function() {
-                if ($(this).val() === 'custom') {
-                    $('#custom_logo_width').focus();
-                }
-            });
-            
-            // カスタムスマホロゴ幅の処理
-            $('input[name="easy_header_logo_width_mobile"]').change(function() {
-                if ($(this).val() === 'custom') {
-                    $('#custom_logo_width_mobile').focus();
-                }
-            });
-            
             // カスタムヘッダー幅の処理
             $('input[name="easy_header_width"]').change(function() {
                 if ($(this).val() === 'custom') {
@@ -1468,14 +1394,6 @@ class EasyHeaderMaker {
             });
             
             // カスタム値が入力された場合、対応するラジオボタンを選択
-            $('#custom_logo_width').on('input', function() {
-                $('input[name="easy_header_logo_width"][value="custom"]').prop('checked', true);
-            });
-            
-            $('#custom_logo_width_mobile').on('input', function() {
-                $('input[name="easy_header_logo_width_mobile"][value="custom"]').prop('checked', true);
-            });
-            
             $('#custom_header_width').on('input', function() {
                 $('input[name="easy_header_width"][value="custom"]').prop('checked', true);
             });
@@ -1585,11 +1503,7 @@ class EasyHeaderMaker {
         
         // ロゴ幅の処理
         if (isset($_POST['easy_header_logo_width'])) {
-            if ($_POST['easy_header_logo_width'] === 'custom' && isset($_POST['easy_header_logo_width_custom'])) {
-                update_post_meta($post_id, '_easy_header_logo_width', intval($_POST['easy_header_logo_width_custom']));
-            } else {
-                update_post_meta($post_id, '_easy_header_logo_width', sanitize_text_field($_POST['easy_header_logo_width']));
-            }
+            update_post_meta($post_id, '_easy_header_logo_width', intval($_POST['easy_header_logo_width']));
         }
         
         if (isset($_POST['easy_header_layout'])) {
@@ -1615,11 +1529,7 @@ class EasyHeaderMaker {
         
         // スマホ用ロゴ幅の処理
         if (isset($_POST['easy_header_logo_width_mobile'])) {
-            if ($_POST['easy_header_logo_width_mobile'] === 'custom' && isset($_POST['easy_header_logo_width_mobile_custom'])) {
-                update_post_meta($post_id, '_easy_header_logo_width_mobile', intval($_POST['easy_header_logo_width_mobile_custom']));
-            } else {
-                update_post_meta($post_id, '_easy_header_logo_width_mobile', sanitize_text_field($_POST['easy_header_logo_width_mobile']));
-            }
+            update_post_meta($post_id, '_easy_header_logo_width_mobile', intval($_POST['easy_header_logo_width_mobile']));
         }
         
         // サブタイトル背景色の処理
