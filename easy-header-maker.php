@@ -3,7 +3,9 @@
  * Plugin Name: Easy Header Maker
  * Description: WordPressで簡単にページごとの独自ヘッダーを作成できるプラグイン
  * Version: 1.0.0
- * Author: Your Name
+ * Author: Shota Takazawa
+ * Author URI: https://github.com/takazawashota/wp-simple-file-creator/
+ * License: GPL2
  */
 
 // Exit if accessed directly
@@ -1234,11 +1236,14 @@ class EasyHeaderMaker {
                     <tr>
                         <th scope="row">ヘッダーロゴ</th>
                         <td>
-                            <input type="url" id="easy_header_logo" name="easy_header_logo" value="<?php echo esc_attr($header_logo); ?>" style="width: 100%; max-width: 400px;" />
+                            <input type="url" id="easy_header_logo" name="easy_header_logo" value="<?php echo esc_attr($header_logo); ?>" style="width: 100%; max-width: 300px;" />
                             <button type="button" id="upload_logo_button" class="button">ロゴを選択</button>
+                            <?php if ($header_logo): ?>
+                                <button type="button" id="remove_logo_button" class="button" style="margin-left: 5px;">削除</button>
+                            <?php endif; ?>
                             <p class="description">ロゴ画像のURLを入力するか、「ロゴを選択」ボタンでメディアライブラリから選択してください。</p>
                             <?php if ($header_logo): ?>
-                                <div style="margin-top: 10px;">
+                                <div id="logo_preview" style="margin-top: 10px;">
                                     <img src="<?php echo esc_url($header_logo); ?>" style="max-width: 200px; height: auto;" />
                                 </div>
                             <?php endif; ?>
@@ -1493,10 +1498,44 @@ class EasyHeaderMaker {
                 mediaUploader.on('select', function() {
                     var attachment = mediaUploader.state().get('selection').first().toJSON();
                     $('#easy_header_logo').val(attachment.url);
+                    // プレビューを更新
+                    updateLogoPreview(attachment.url);
                 });
                 
                 mediaUploader.open();
             });
+            
+            // ロゴ削除ボタン
+            $('#remove_logo_button').click(function(e) {
+                e.preventDefault();
+                $('#easy_header_logo').val('');
+                $('#logo_preview').hide();
+                $(this).hide();
+            });
+            
+            // ロゴプレビュー更新関数
+            function updateLogoPreview(url) {
+                if (url) {
+                    if ($('#logo_preview').length) {
+                        $('#logo_preview img').attr('src', url);
+                        $('#logo_preview').show();
+                    } else {
+                        $('#easy_header_logo').parent().append('<div id="logo_preview" style="margin-top: 10px;"><img src="' + url + '" style="max-width: 200px; height: auto;" /></div>');
+                    }
+                    if ($('#remove_logo_button').length === 0) {
+                        $('#upload_logo_button').after('<button type="button" id="remove_logo_button" class="button" style="margin-left: 5px;">削除</button>');
+                        // 新しく作成された削除ボタンにイベントを追加
+                        $('#remove_logo_button').click(function(e) {
+                            e.preventDefault();
+                            $('#easy_header_logo').val('');
+                            $('#logo_preview').hide();
+                            $(this).hide();
+                        });
+                    } else {
+                        $('#remove_logo_button').show();
+                    }
+                }
+            }
         });
         </script>
         <?php
@@ -1656,16 +1695,6 @@ class EasyHeaderMaker {
         <div class="wrap">
             <h1>Easy Header Maker</h1>
             
-            <div style="max-width: 800px; margin: 20px 0 50px;">
-                <h2>使い方</h2>
-                <ol>
-                    <li><strong>基本設定</strong>：下記の「対象投稿タイプ」で、ヘッダー設定を利用したい投稿タイプを選択</li>
-                    <li><strong>個別ページ設定</strong>：選択した投稿タイプの編集画面で「独自ヘッダー設定」メタボックスが表示され、各ページごとに設定可能</li>
-                    <li><strong>ナビゲーションメニュー</strong>：「外観」→「<a href="/wp-admin/nav-menus.php" target="_blank">メニュー</a>」で作成したメニューをヘッダーに表示可能</li>
-                    <li><strong>レスポンシブ対応</strong>：モバイルデバイスでも適切に表示されます</li>
-                </ol>
-            </div>
-            
             <form method="post" action="">
                 <?php wp_nonce_field('easy_header_settings', 'easy_header_nonce'); ?>
                 
@@ -1695,6 +1724,17 @@ class EasyHeaderMaker {
                     <input type="submit" name="submit" class="button-primary" value="設定を保存" />
                 </p>
             </form>
+
+            <div style="max-width: 800px; margin: 20px 0 50px;">
+                <h2>使い方</h2>
+                <ol>
+                    <li><strong>基本設定</strong>：下記の「対象投稿タイプ」で、ヘッダー設定を利用したい投稿タイプを選択</li>
+                    <li><strong>個別ページ設定</strong>：選択した投稿タイプの編集画面で「独自ヘッダー設定」メタボックスが表示され、各ページごとに設定可能</li>
+                    <li><strong>ナビゲーションメニュー</strong>：「外観」→「<a href="/wp-admin/nav-menus.php" target="_blank">メニュー</a>」で作成したメニューをヘッダーに表示可能</li>
+                    <li><strong>レスポンシブ対応</strong>：モバイルデバイスでも適切に表示されます</li>
+                </ol>
+                <p>詳しくはこちらの<a href="https://sokulabo.com/products/easy-header-maker/" target="_blank">マニュアル</a>をご確認ください。</p>
+            </div>
         </div>
         <?php
     }
