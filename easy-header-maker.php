@@ -230,6 +230,42 @@ class EasyHeaderMaker {
                 'single' => true,
                 'default' => ''
             ));
+            
+            register_post_meta($post_type, '_easy_header_notice_enable', array(
+                'type' => 'boolean',
+                'single' => true,
+                'default' => false
+            ));
+            
+            register_post_meta($post_type, '_easy_header_notice_text', array(
+                'type' => 'string',
+                'single' => true,
+                'default' => ''
+            ));
+            
+            register_post_meta($post_type, '_easy_header_notice_url', array(
+                'type' => 'string',
+                'single' => true,
+                'default' => ''
+            ));
+            
+            register_post_meta($post_type, '_easy_header_notice_bg_color', array(
+                'type' => 'string',
+                'single' => true,
+                'default' => '#f39c12'
+            ));
+            
+            register_post_meta($post_type, '_easy_header_notice_text_color', array(
+                'type' => 'string',
+                'single' => true,
+                'default' => '#ffffff'
+            ));
+            
+            register_post_meta($post_type, '_easy_header_notice_external', array(
+                'type' => 'boolean',
+                'single' => true,
+                'default' => false
+            ));
         }
     }
     
@@ -301,7 +337,13 @@ class EasyHeaderMaker {
             'header_shadow' => get_post_meta($post_id, '_easy_header_shadow', true),
             'header_custom_css' => get_post_meta($post_id, '_easy_header_custom_css', true),
             'header_custom_js' => get_post_meta($post_id, '_easy_header_custom_js', true),
-            'header_custom_html' => get_post_meta($post_id, '_easy_header_custom_html', true)
+            'header_custom_html' => get_post_meta($post_id, '_easy_header_custom_html', true),
+            'notice_enable' => get_post_meta($post_id, '_easy_header_notice_enable', true),
+            'notice_text' => get_post_meta($post_id, '_easy_header_notice_text', true),
+            'notice_url' => get_post_meta($post_id, '_easy_header_notice_url', true),
+            'notice_bg_color' => get_post_meta($post_id, '_easy_header_notice_bg_color', true) ?: '#f39c12',
+            'notice_text_color' => get_post_meta($post_id, '_easy_header_notice_text_color', true) ?: '#ffffff',
+            'notice_external' => get_post_meta($post_id, '_easy_header_notice_external', true)
         );
     }
     
@@ -362,6 +404,24 @@ class EasyHeaderMaker {
             }
             .header-custom-html {
                 display: inline-block;
+            }
+            
+            /* 通知バーのスタイル */
+            .easy-header-notice {
+
+            }
+            .easy-header-notice .notice-inner {
+
+            }
+            .easy-header-notice a {
+                padding: 7px 20px;
+                font-weight: 600;
+                text-align: center;
+                font-size: 14px;
+                line-height: 1.4;
+            }
+            .easy-header-notice a:hover {
+
             }
             .easy-custom-header .header-logo {
                 height: auto;
@@ -1044,6 +1104,20 @@ class EasyHeaderMaker {
                 <div class="menu-overlay"></div>
             <?php endif; ?>
         </div>
+        
+        <?php if ($notice_enable && !empty($notice_text)): ?>
+            <div class="easy-header-notice" style="background-color: <?php echo esc_attr($notice_bg_color); ?>; color: <?php echo esc_attr($notice_text_color); ?>;">
+                <div class="notice-inner">
+                    <?php if (!empty($notice_url)): ?>
+                        <a href="<?php echo esc_url($notice_url); ?>" 
+                           style="color: inherit; text-decoration: none; display: block;"
+                           <?php if ($notice_external): ?>target="_blank" rel="noopener noreferrer"<?php endif; ?>><?php echo esc_html($notice_text); ?></a>
+                    <?php else: ?>
+                        <?php echo esc_html($notice_text); ?>
+                    <?php endif; ?>
+                </div>
+            </div>
+        <?php endif; ?>
         <?php
     }
     
@@ -1160,6 +1234,12 @@ class EasyHeaderMaker {
         $header_custom_css = get_post_meta($post->ID, '_easy_header_custom_css', true);
         $header_custom_js = get_post_meta($post->ID, '_easy_header_custom_js', true);
         $header_custom_html = get_post_meta($post->ID, '_easy_header_custom_html', true);
+        $notice_enable = get_post_meta($post->ID, '_easy_header_notice_enable', true);
+        $notice_text = get_post_meta($post->ID, '_easy_header_notice_text', true);
+        $notice_url = get_post_meta($post->ID, '_easy_header_notice_url', true);
+        $notice_bg_color = get_post_meta($post->ID, '_easy_header_notice_bg_color', true) ?: '#f39c12';
+        $notice_text_color = get_post_meta($post->ID, '_easy_header_notice_text_color', true) ?: '#ffffff';
+        $notice_external = get_post_meta($post->ID, '_easy_header_notice_external', true);
         ?>
         <div style="max-width: 800px;">
             <table class="form-table">
@@ -1354,6 +1434,38 @@ class EasyHeaderMaker {
                         <td>
                             <textarea name="easy_header_custom_html" rows="8" style="width: 100%; max-width: 600px; font-family: Monaco, Consolas, 'Courier New', monospace; font-size: 12px;"><?php echo esc_textarea($header_custom_html); ?></textarea>
                             <p class="description">ヘッダーの右端（横並びレイアウト）または下部（縦並びレイアウト）に表示するカスタムHTMLを記述できます。ボタンやアイコンなどに使用してください。</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">通知バー</th>
+                        <td>
+                            <label>
+                                <input type="checkbox" name="easy_header_notice_enable" value="1" <?php checked($notice_enable, 1); ?> />
+                                通知バーを有効化
+                            </label>
+                            <div style="margin-top: 10px;">
+                                <label>通知テキスト:</label><br>
+                                <input type="text" name="easy_header_notice_text" value="<?php echo esc_attr($notice_text); ?>" style="width: 100%; max-width: 600px;" placeholder="お知らせテキストを入力してください" />
+                            </div>
+                            <div style="margin-top: 10px;">
+                                <label>リンクURL（任意）:</label><br>
+                                <input type="url" name="easy_header_notice_url" value="<?php echo esc_attr($notice_url); ?>" style="width: 100%; max-width: 600px;" placeholder="https://example.com" />
+                            </div>
+                            <div style="margin-top: 10px;">
+                                <label>
+                                    <input type="checkbox" name="easy_header_notice_external" value="1" <?php checked($notice_external, 1); ?> />
+                                    外部サイトを新しいタブで開く
+                                </label>
+                            </div>
+                            <div style="margin-top: 10px;">
+                                <label>背景色:</label><br>
+                                <input type="color" name="easy_header_notice_bg_color" value="<?php echo esc_attr($notice_bg_color); ?>" />
+                            </div>
+                            <div style="margin-top: 10px;">
+                                <label>文字色:</label><br>
+                                <input type="color" name="easy_header_notice_text_color" value="<?php echo esc_attr($notice_text_color); ?>" />
+                            </div>
+                            <p class="description">ヘッダーの下に表示される通知バーです。PC・スマホ共通で表示されます。</p>
                         </td>
                     </tr>
                 </table>
@@ -1562,6 +1674,22 @@ class EasyHeaderMaker {
         // カスタムHTMLの処理
         if (isset($_POST['easy_header_custom_html'])) {
             update_post_meta($post_id, '_easy_header_custom_html', wp_unslash($_POST['easy_header_custom_html']));
+        }
+        
+        // 通知バーの処理
+        update_post_meta($post_id, '_easy_header_notice_enable', isset($_POST['easy_header_notice_enable']) ? 1 : 0);
+        if (isset($_POST['easy_header_notice_text'])) {
+            update_post_meta($post_id, '_easy_header_notice_text', sanitize_text_field($_POST['easy_header_notice_text']));
+        }
+        if (isset($_POST['easy_header_notice_url'])) {
+            update_post_meta($post_id, '_easy_header_notice_url', esc_url_raw($_POST['easy_header_notice_url']));
+        }
+        update_post_meta($post_id, '_easy_header_notice_external', isset($_POST['easy_header_notice_external']) ? 1 : 0);
+        if (isset($_POST['easy_header_notice_bg_color'])) {
+            update_post_meta($post_id, '_easy_header_notice_bg_color', sanitize_hex_color($_POST['easy_header_notice_bg_color']));
+        }
+        if (isset($_POST['easy_header_notice_text_color'])) {
+            update_post_meta($post_id, '_easy_header_notice_text_color', sanitize_hex_color($_POST['easy_header_notice_text_color']));
         }
     }
     
