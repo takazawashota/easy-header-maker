@@ -1416,20 +1416,6 @@ class EasyHeaderMaker {
                         </td>
                     </tr>
                     <tr>
-                        <th scope="row">カスタムCSS</th>
-                        <td>
-                            <textarea name="easy_header_custom_css" rows="8" style="width: 100%; max-width: 600px; font-family: Monaco, Consolas, 'Courier New', monospace; font-size: 12px;"><?php echo esc_textarea($header_custom_css); ?></textarea>
-                            <p class="description">このヘッダー専用のカスタムCSSを記述できます。セレクタは .easy-custom-header で始めることを推奨します。</p>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row">カスタムJavaScript</th>
-                        <td>
-                            <textarea name="easy_header_custom_js" rows="8" style="width: 100%; max-width: 600px; font-family: Monaco, Consolas, 'Courier New', monospace; font-size: 12px;"><?php echo esc_textarea($header_custom_js); ?></textarea>
-                            <p class="description">このヘッダー専用のカスタムJavaScriptを記述できます。DOMContentLoadedイベント内で実行されます。</p>
-                        </td>
-                    </tr>
-                    <tr>
                         <th scope="row">カスタムHTML（PCのみ）</th>
                         <td>
                             <textarea name="easy_header_custom_html" rows="8" style="width: 100%; max-width: 600px; font-family: Monaco, Consolas, 'Courier New', monospace; font-size: 12px;"><?php echo esc_textarea($header_custom_html); ?></textarea>
@@ -1466,6 +1452,20 @@ class EasyHeaderMaker {
                                 <input type="color" name="easy_header_notice_text_color" value="<?php echo esc_attr($notice_text_color); ?>" />
                             </div>
                             <p class="description">ヘッダーの下に表示される通知バーです。PC・スマホ共通で表示されます。</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">カスタムCSS</th>
+                        <td>
+                            <textarea name="easy_header_custom_css" rows="8" style="width: 100%; max-width: 600px; font-family: Monaco, Consolas, 'Courier New', monospace; font-size: 12px;"><?php echo esc_textarea($header_custom_css); ?></textarea>
+                            <p class="description">このヘッダー専用のカスタムCSSを記述できます。セレクタは .easy-custom-header で始めることを推奨します。</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">カスタムJavaScript</th>
+                        <td>
+                            <textarea name="easy_header_custom_js" rows="8" style="width: 100%; max-width: 600px; font-family: Monaco, Consolas, 'Courier New', monospace; font-size: 12px;"><?php echo esc_textarea($header_custom_js); ?></textarea>
+                            <p class="description">このヘッダー専用のカスタムJavaScriptを記述できます。DOMContentLoadedイベント内で実行されます。</p>
                         </td>
                     </tr>
                 </table>
@@ -1661,16 +1661,6 @@ class EasyHeaderMaker {
         // シャドウ設定の処理
         update_post_meta($post_id, '_easy_header_shadow', isset($_POST['easy_header_shadow']) ? 1 : 0);
         
-        // カスタムCSSの処理
-        if (isset($_POST['easy_header_custom_css'])) {
-            update_post_meta($post_id, '_easy_header_custom_css', wp_unslash($_POST['easy_header_custom_css']));
-        }
-        
-        // カスタムJSの処理
-        if (isset($_POST['easy_header_custom_js'])) {
-            update_post_meta($post_id, '_easy_header_custom_js', wp_unslash($_POST['easy_header_custom_js']));
-        }
-        
         // カスタムHTMLの処理
         if (isset($_POST['easy_header_custom_html'])) {
             update_post_meta($post_id, '_easy_header_custom_html', wp_unslash($_POST['easy_header_custom_html']));
@@ -1690,6 +1680,16 @@ class EasyHeaderMaker {
         }
         if (isset($_POST['easy_header_notice_text_color'])) {
             update_post_meta($post_id, '_easy_header_notice_text_color', sanitize_hex_color($_POST['easy_header_notice_text_color']));
+        }
+
+        // カスタムCSSの処理
+        if (isset($_POST['easy_header_custom_css'])) {
+            update_post_meta($post_id, '_easy_header_custom_css', wp_unslash($_POST['easy_header_custom_css']));
+        }
+        
+        // カスタムJSの処理
+        if (isset($_POST['easy_header_custom_js'])) {
+            update_post_meta($post_id, '_easy_header_custom_js', wp_unslash($_POST['easy_header_custom_js']));
         }
     }
     
