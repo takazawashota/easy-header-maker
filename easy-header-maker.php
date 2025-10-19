@@ -330,42 +330,7 @@ class EasyHeaderMaker {
                 box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
                 <?php endif; ?>
             }
-            
-            /* デスクトップでのスティッキー設定 */
-            @media (min-width: 769px) {
-                <?php if ($header_sticky_desktop): ?>
-                .easy-custom-header {
-                    position: sticky;
-                    top: 0;
-                    z-index: 9999 !important;
-                }
-                <?php endif; ?>
-                
-                /* 管理バーがある場合の調整 */
-                .admin-bar .easy-custom-header {
-                    <?php if ($header_sticky_desktop): ?>
-                    top: 32px;
-                    <?php endif; ?>
-                }
-            }
-            
-            /* モバイルでのスティッキー設定 */
-            @media (max-width: 768px) {
-                <?php if ($header_sticky_mobile): ?>
-                .easy-custom-header {
-                    position: sticky;
-                    top: 0;
-                    z-index: 9999 !important;
-                }
-                <?php endif; ?>
-                
-                /* 管理バーがある場合の調整 */
-                .admin-bar .easy-custom-header {
-                    <?php if ($header_sticky_mobile): ?>
-                    top: 0;
-                    <?php endif; ?>
-                }
-            }
+
             .easy-custom-header .header-inner {
                 <?php echo $max_width_style; ?>
             }
@@ -884,30 +849,38 @@ class EasyHeaderMaker {
                 }
             }
             
-            /* JavaScriptフォールバック用のスティッキークラス */
-            .easy-custom-header.sticky-fallback {
-                position: fixed !important;
-                top: 0 !important;
-                left: 0 !important;
-                right: 0 !important;
-                width: 100% !important;
-                z-index: 9999 !important;
-            }
-            
-            /* 管理バーがある場合の調整 */
-            /* .admin-bar .easy-custom-header.sticky-fallback {
-                top: 46px !important;
-            } */
-            
-            @media (min-width: 769px) {
-                .admin-bar .easy-custom-header.sticky-fallback {
-                    top: 32px !important;
-                }
-            }
-            
             /* ボタン要素のスタイル */
             button.hamburger-menu{
                 color: #000 !important;
+            }
+
+            /* デスクトップでのスティッキー設定 */
+            @media (min-width: 769px) {
+                <?php if ($header_sticky_desktop): ?>
+                .easy-custom-header {
+                    position: -webkit-sticky;
+                    position: sticky;
+                    top: 0;
+                    z-index: 9999 !important;
+                }
+                
+                /* 管理バーがある場合の調整 */
+                .admin-bar .easy-custom-header {
+                    top: 32px;
+                }
+                <?php endif; ?>
+            }
+            
+            /* モバイルでのスティッキー設定 */
+            @media (max-width: 768px) {
+                <?php if ($header_sticky_mobile): ?>
+                .easy-custom-header {
+                    position: -webkit-sticky;
+                    position: sticky;
+                    top: 0;
+                    z-index: 9999 !important;
+                }
+                <?php endif; ?>
             }
             
             /* カスタムCSS */
@@ -1065,42 +1038,7 @@ class EasyHeaderMaker {
                 }
             }
             
-            // スティッキーヘッダーのフォールバック機能
-            if (header) {
-                var headerOffset = header.offsetTop;
-                var isDesktop = window.innerWidth > 768;
-                var isMobile = window.innerWidth <= 768;
-                var stickyDesktop = <?php echo $header_data['header_sticky_desktop'] ? 'true' : 'false'; ?>;
-                var stickyMobile = <?php echo $header_data['header_sticky_mobile'] ? 'true' : 'false'; ?>;
-                
-                function handleScroll() {
-                    var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-                    var shouldStick = false;
-                    
-                    if (isDesktop && stickyDesktop) {
-                        shouldStick = true;
-                    } else if (isMobile && stickyMobile) {
-                        shouldStick = true;
-                    }
-                    
-                    if (shouldStick && scrollTop > headerOffset) {
-                        header.classList.add('sticky-fallback');
-                    } else {
-                        header.classList.remove('sticky-fallback');
-                    }
-                }
-                
-                // リサイズ時にデスクトップ/モバイル判定を更新
-                function handleResize() {
-                    isDesktop = window.innerWidth > 768;
-                    isMobile = window.innerWidth <= 768;
-                    handleScroll(); // スクロール状態を再評価
-                }
-                
-                window.addEventListener('scroll', handleScroll);
-                window.addEventListener('resize', handleResize);
-                handleScroll(); // 初期実行
-            }
+
             
             // カスタムJavaScript
             <?php if (!empty($header_custom_js)): ?>
