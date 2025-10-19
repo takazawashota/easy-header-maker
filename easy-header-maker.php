@@ -683,6 +683,7 @@ class EasyHeaderMaker {
                 
                 .easy-custom-header .header-subtitle-inner {
                     <?php echo $max_width_style; ?>
+                    width: 100%;
                 }
                 
                 .easy-custom-header:has(.header-subtitle) .header-inner,
