@@ -224,6 +224,12 @@ class EasyHeaderMaker {
                 'single' => true,
                 'default' => ''
             ));
+            
+            register_post_meta($post_type, '_easy_header_custom_html', array(
+                'type' => 'string',
+                'single' => true,
+                'default' => ''
+            ));
         }
     }
     
@@ -294,7 +300,8 @@ class EasyHeaderMaker {
             'header_sticky_mobile' => get_post_meta($post_id, '_easy_header_sticky_mobile', true),
             'header_shadow' => get_post_meta($post_id, '_easy_header_shadow', true),
             'header_custom_css' => get_post_meta($post_id, '_easy_header_custom_css', true),
-            'header_custom_js' => get_post_meta($post_id, '_easy_header_custom_js', true)
+            'header_custom_js' => get_post_meta($post_id, '_easy_header_custom_js', true),
+            'header_custom_html' => get_post_meta($post_id, '_easy_header_custom_html', true)
         );
     }
     
@@ -348,6 +355,13 @@ class EasyHeaderMaker {
             }
             .easy-custom-header.layout-horizontal .header-right {
                 flex: 1;
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+                gap: 20px;
+            }
+            .header-custom-html {
+                display: inline-block;
             }
             .easy-custom-header .header-logo {
                 height: auto;
@@ -406,7 +420,7 @@ class EasyHeaderMaker {
                 display: flex;
                 justify-content: center;
                 flex-wrap: wrap;
-                gap: 20px;
+                gap: 16px;
             }
             /* デスクトップ（768px超）でのメニュー表示とハンバーガーボタン非表示 */
             @media (min-width: 769px) {
@@ -422,6 +436,22 @@ class EasyHeaderMaker {
                     padding: 0 !important;
                     left: auto !important;
                     display: flex !important;
+                }
+                
+                /* デスクトップでカスタムHTMLを表示 */
+                .header-custom-html {
+                    display: inline-block !important;
+                }
+                
+                /* 横レイアウトでのカスタムHTML調整 */
+                .easy-custom-header.layout-horizontal .header-custom-html {
+                    margin-left: 10px;
+                }
+                
+                /* 縦レイアウトでのカスタムHTML調整 */
+                .easy-custom-header:not(.layout-horizontal) .header-custom-html {
+                    margin-top: 10px;
+                    text-align: center;
                 }
             }
             /* ハンバーガーメニューボタン（デフォルトで非表示） */
@@ -489,7 +519,7 @@ class EasyHeaderMaker {
             }
             .easy-custom-header .header-navigation a {
                 display: block;
-                padding: 8px 4px;
+                padding: 8px 0;
                 border-radius: 4px;
                 transition: background-color 0.3s ease;
                 text-align: left;
@@ -716,6 +746,11 @@ class EasyHeaderMaker {
                 .easy-custom-header:not(.layout-horizontal) .header-navigation {
                     position: static;
                     margin: 0;
+                }
+                
+                /* モバイルではカスタムHTMLを非表示 */
+                .header-custom-html {
+                    display: none !important;
                 }
                 /* ハンバーガーメニューボタンを表示 */
                 .easy-custom-header .header-navigation .hamburger-menu {
@@ -956,6 +991,12 @@ class EasyHeaderMaker {
                                 ?>
                             </nav>
                         <?php endif; ?>
+                        
+                        <?php if (!empty($header_custom_html)): ?>
+                            <div class="header-custom-html">
+                                <?php echo wp_kses_post($header_custom_html); ?>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 <?php else: ?>
                     <div class="header-content">
@@ -989,6 +1030,12 @@ class EasyHeaderMaker {
                             ));
                             ?>
                         </nav>
+                    <?php endif; ?>
+                    
+                    <?php if (!empty($header_custom_html)): ?>
+                        <div class="header-custom-html">
+                            <?php echo wp_kses_post($header_custom_html); ?>
+                        </div>
                     <?php endif; ?>
                 <?php endif; ?>
             </div>
@@ -1112,6 +1159,7 @@ class EasyHeaderMaker {
         $header_shadow = get_post_meta($post->ID, '_easy_header_shadow', true);
         $header_custom_css = get_post_meta($post->ID, '_easy_header_custom_css', true);
         $header_custom_js = get_post_meta($post->ID, '_easy_header_custom_js', true);
+        $header_custom_html = get_post_meta($post->ID, '_easy_header_custom_html', true);
         ?>
         <div style="max-width: 800px;">
             <table class="form-table">
@@ -1299,6 +1347,13 @@ class EasyHeaderMaker {
                         <td>
                             <textarea name="easy_header_custom_js" rows="8" style="width: 100%; max-width: 600px; font-family: Monaco, Consolas, 'Courier New', monospace; font-size: 12px;"><?php echo esc_textarea($header_custom_js); ?></textarea>
                             <p class="description">このヘッダー専用のカスタムJavaScriptを記述できます。DOMContentLoadedイベント内で実行されます。</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">カスタムHTML（PCのみ）</th>
+                        <td>
+                            <textarea name="easy_header_custom_html" rows="8" style="width: 100%; max-width: 600px; font-family: Monaco, Consolas, 'Courier New', monospace; font-size: 12px;"><?php echo esc_textarea($header_custom_html); ?></textarea>
+                            <p class="description">ヘッダーの右端（横並びレイアウト）または下部（縦並びレイアウト）に表示するカスタムHTMLを記述できます。ボタンやアイコンなどに使用してください。</p>
                         </td>
                     </tr>
                 </table>
@@ -1502,6 +1557,11 @@ class EasyHeaderMaker {
         // カスタムJSの処理
         if (isset($_POST['easy_header_custom_js'])) {
             update_post_meta($post_id, '_easy_header_custom_js', wp_unslash($_POST['easy_header_custom_js']));
+        }
+        
+        // カスタムHTMLの処理
+        if (isset($_POST['easy_header_custom_html'])) {
+            update_post_meta($post_id, '_easy_header_custom_html', wp_unslash($_POST['easy_header_custom_html']));
         }
     }
     
