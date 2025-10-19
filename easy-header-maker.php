@@ -409,6 +409,9 @@ class EasyHeaderMaker {
                 margin-bottom: 0;
                 margin-right: 0;
             }
+            .easy-custom-header.layout-center .header-title {
+                margin: 0;
+            }
             .easy-custom-header a {
                 display: flex;
                 color: inherit;
