@@ -1,6 +1,6 @@
 # Easy Header Maker
 
-![Easy Header Maker]()
+![Easy Header Maker](https://sokulabo.com/products/wp-content/uploads/2025/10/banner-1544×500-rtl.jpg)
 
 WordPressの投稿、固定ページ、カスタム投稿タイプのそれぞれのページごとに簡単にヘッダーを作成できるプラグインです。ランディングページを作成する際などに便利です。
 
