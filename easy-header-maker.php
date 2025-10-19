@@ -235,7 +235,7 @@ class EasyHeaderMaker {
         
         add_meta_box(
             'easy_header_meta_box',
-            '独自ヘッダー設定',
+            'Easy Header Maker',
             array($this, 'meta_box_callback'),
             $enabled_post_types,
             'normal',
@@ -633,7 +633,7 @@ class EasyHeaderMaker {
                 .easy-custom-header:has(.header-subtitle) .header-inner,
                 .easy-custom-header .header-subtitle + .header-inner {
                     margin-top: 0 !important;
-                    padding: 26px 30px;
+                    padding: 16px 30px;
                     box-sizing: content-box;
                 }
                 
@@ -645,8 +645,8 @@ class EasyHeaderMaker {
                 .easy-custom-header.layout-horizontal .header-subtitle {
                     background: <?php echo esc_attr($header_subtitle_bg_color); ?>;
                     color: <?php echo esc_attr($header_subtitle_text_color); ?>;
-                    font-size: 14px;
-                    padding: 6px 0;
+                    font-size: 12px;
+                    padding: 3px 0;
                 }
                 
                 .easy-custom-header.layout-horizontal .header-subtitle-inner {
