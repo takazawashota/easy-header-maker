@@ -1,6 +1,6 @@
 === Easy Header Maker ===
 Contributors: stakazawa
-Tags: header, custom, post, page, custom post types
+Tags: header, post, page, custom post types, landing page
 Requires at least: 5.0
 Tested up to: 6.8
 Requires PHP: 7.2
@@ -8,113 +8,90 @@ Stable tag: 1.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-
-CSV Import Export with a simple interface to bulk import/export posts, pages, and custom post types using CSV files.
+Easily create and customize unique headers for each post, page, or custom post type.  
+Normally, WordPress does not have a function that allows you to change the header content for each page. This plugin allows you to display a unique header with different content for each post, static page, and custom post type page.
 
 == Description ==
 
-Simple CSV Import Export is an easy-to-use plugin that allows you to bulk import and export WordPress posts, pages, and custom post types using CSV files.
+Easy Header Maker** is a simple and intuitive plugin that allows you to easily create and manage custom headers for each WordPress post, page, or custom post type.
+
+Ideal for landing pages, promotional pages, or sites that require different header designs per content type — without writing any code.
 
 = Main Features =
 
-* Bulk import for posts, pages, and custom post types
-* Update existing posts
-* Automatic creation of categories, tags, and custom taxonomies
-* Support for custom fields
-* Set featured images
-* CSV testing and validation function
-* Error checking and detailed reports
-* UTF-8 encoding support
+* Create unique headers for posts, pages, and custom post types  
+* Customize titles, subtitles, and buttons  
+* Choose display conditions (e.g., show only on specific pages or post types)  
+* Compatible with most WordPress themes  
+* Lightweight and easy to use  
 
 = How to Use =
 
-1. Install and activate the plugin
-2. Go to Tools > Simple CSV Import Export
-3. Select either Import or Export
-4. Upload your CSV file to import, or export posts/pages/custom post types as CSV
+1. Install and activate the plugin  
+2. ヘッダーを追加したい投稿・固定ページ、カスタム投稿ページのエディタ画面へ移動します
+3. 
+4. Assign it to individual posts, pages, or custom post types  
+5. Save and preview your changes  
 
-= Importable Data =
+= Use Cases =
 
-* Post title
-* Post content
-* Author
-* Publish date
-* Categories
-* Tags
-* Custom fields
-* Featured image
-* Custom taxonomies
-* Post status
-* Other metadata
-
-= CSV Format =
-
-The basic CSV format can be checked in the “CSV Format Specification” tab in the admin panel.  
-A sample CSV file is also available for download.
+* Create unique hero sections for landing pages  
+* Add promotional headers to specific pages  
+* Use different visuals for blog posts or product pages  
 
 = Notes =
 
-* CSV files must be encoded in UTF-8
-* For large imports, please check your server settings
-* We recommend backing up your site before importing
+* No coding required  
+* Works with most popular themes  
+* Fully responsive header design  
 
 = Links =
 
-* [Official Website](https://sokulabo.com/products/simple-csv-import-export/)
+* [Official Website](https://sokulabo.com/products/easy-header-maker/)
 
 == Installation ==
 
-1. Download the plugin as a zip file
-2. Upload and install it from the WordPress admin panel
-3. Activate the plugin
-4. Start using it from Tools > Simple CSV Import Export
+1. Download the plugin as a ZIP file  
+2. Upload it from the WordPress admin panel (Plugins > Add New > Upload Plugin)  
+3. Activate **Easy Header Maker**  
+4. Start creating headers from **Appearance > Easy Header Maker**
 
 == Frequently Asked Questions ==
 
-= Is there a limit to how much data I can import at once? =
+= Can I set different headers for different pages? =  
+Yes. Each post, page, or custom post type can have its own unique header.
 
-It depends on your server settings (memory limit, execution time, etc.). The plugin automatically adjusts batch sizes to safely handle imports.
+= Does it work with custom post types? =  
+Yes. The plugin supports all registered custom post types.
 
-= Can I update existing posts? =
+= Can I use my theme’s styles? =  
+Yes. The plugin integrates with your theme’s CSS, ensuring consistent design.
 
-Yes. You can update existing posts by specifying the "post_id" column in the CSV file.
-
-= Does it support custom post types? =
-
-Yes, it supports all custom post types.
-
-= Can I import/export custom fields? =
-
-Yes, custom field values can be imported and exported.
-
-= How do I set featured images? =
-
-By specifying the image URL in the "post_thumbnail" column, the image will be automatically uploaded to the media library and set as the featured image.
+= Is it responsive? =  
+Yes. All headers are responsive and look great on mobile, tablet, and desktop.
 
 == Screenshots ==
 
-1. Main screen
-2. Import settings
-3. Export settings
-4. CSV test function
-5. Format specification screen
+1. Header editor screen  
+2. Page assignment settings  
+3. Live preview  
+4. Example of a custom header on a landing page  
 
 == Changelog ==
 
 = 1.0.0 =
-* Initial release
-* Implemented import/export functionality
-* Added CSV test functionality
-* Optimized batch processing
-* Added sample CSV download function
-* Implemented detailed error report feature
+* Initial release  
+* Added per-page and per-post header creation  
+* Live preview feature  
+* Responsive layout support  
+* Theme-compatible design structure  
 
 == Upgrade Notice ==
 
 = 1.0.0 =
-Initial release – install and start using.
+Initial release – create unique headers for every page easily.
 
 == Privacy Policy ==
 
-This plugin does not collect personal information.  
-However, please handle with care if the data you import/export contains personal information.
+This plugin does not collect or transmit any personal data.  
+However, please ensure compliance if your site content includes personal information.

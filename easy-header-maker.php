@@ -1032,6 +1032,8 @@ class EasyHeaderMaker {
         if (!$header_data) {
             return;
         }
+        
+        extract($header_data);
         ?>
         <script id="easy-header-scripts">
         document.addEventListener("DOMContentLoaded", function() {
@@ -1207,15 +1209,27 @@ class EasyHeaderMaker {
                                 <input type="radio" name="easy_header_width" value="full" <?php checked($header_width, 'full'); ?> />
                                 フル幅
                             </label><br />
+                            <label style="margin-top: 5px; display: inline-block;">
+                                <input type="radio" name="easy_header_width" value="1200" <?php checked($header_width, '1200'); ?> />
+                                1200px
+                            </label><br />
+                            <label style="margin-top: 5px; display: inline-block;">
+                                <input type="radio" name="easy_header_width" value="1000" <?php checked($header_width, '1000'); ?> />
+                                1000px
+                            </label><br />
+                            <label style="margin-top: 5px; display: inline-block;">
+                                <input type="radio" name="easy_header_width" value="800" <?php checked($header_width, '800'); ?> />
+                                800px
+                            </label><br />
                             <label style="margin-top: 10px; display: inline-block;">
                                 <input type="radio" name="easy_header_width" value="custom" <?php 
-                                    if ($header_width !== 'full') {
+                                    if (!in_array($header_width, array('full', '1200', '1000', '800'))) {
                                         echo 'checked="checked"';
                                     }
                                 ?> />
                                 カスタム：
                                 <input type="number" id="custom_header_width" name="easy_header_width_custom" 
-                                       value="<?php echo $header_width !== 'full' ? esc_attr($header_width) : '960'; ?>" 
+                                       value="<?php echo !in_array($header_width, array('full', '1200', '1000', '800')) ? esc_attr($header_width) : '960'; ?>" 
                                        min="300" max="1920" step="10" style="width: 80px; margin-left: 5px;" />px
                             </label>
                             <p class="description">ヘッダー内容の最大横幅を設定します。フル幅の場合はコンテナの幅いっぱいに表示されます。</p>
