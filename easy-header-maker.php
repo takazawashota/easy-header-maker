@@ -451,7 +451,8 @@ class EasyHeaderMaker {
             .easy-custom-header.layout-center .header-title {
                 margin: 0;
             }
-            .easy-custom-header a {
+            .easy-custom-header a,
+            .easy-custom-header div {
                 display: flex;
                 color: inherit;
                 text-decoration: none;
@@ -656,10 +657,6 @@ class EasyHeaderMaker {
             }
             .easy-custom-header .header-navigation .sub-menu .sub-menu .sub-menu {
                 z-index: 10001;
-            }
-            .easy-custom-header .header-subtitle {
-                margin: 0;
-                opacity: 0.8;
             }
             .easy-custom-header.layout-horizontal .header-subtitle {
                 margin: 0;
