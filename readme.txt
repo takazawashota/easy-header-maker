@@ -8,8 +8,7 @@ Stable tag: 1.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Easily create and customize unique headers for each post, page, or custom post type.  
-Normally, WordPress does not have a function that allows you to change the header content for each page. This plugin allows you to display a unique header with different content for each post, static page, and custom post type page.
+Easily create and customize your own header for each post, page, or custom post type page.
 
 == Description ==
 
